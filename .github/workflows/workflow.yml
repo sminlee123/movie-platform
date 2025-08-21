@@ -1,0 +1,30 @@
+name: workflow  # 워크 플로우 이름
+
+# workflow 실행 트리거
+# develop 브랜치에 push, pull_request 할 때
+on:
+  push:
+    branches: ["develop"]
+  pull_request:
+    branches: ["develop"]
+
+# 작업 단위
+jobs:
+  build:
+    runs-on: ubuntu-latest # job을 실행하는 서버 환경 (가상 머신)
+
+    # job 안의 단계
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven  # 의존성 캐싱
+
+      - name: Build
+        run: mvn clean verify # 가상 머신에서 터미널 명령어처럼 실행
+## 배포 추후 추가 예정
