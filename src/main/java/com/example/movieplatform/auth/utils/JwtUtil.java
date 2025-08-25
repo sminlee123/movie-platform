@@ -4,16 +4,18 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 
 @Slf4j
+@Component
 public class JwtUtil {
 
     // 개발자가 만드는 시크릿 값
     // 나중에 옮기기
-    private static final String SECRET = "bW92aWVwbGF0Zm9ybWp3dHRva2Vuc2VjcmV0a2V5";
+    private static final String SECRET = "7JiB7ZmU7ZSM656r7Y+87Y+s7Yq47Y+066as7Jik7ZSE66Gc7KCd7Yq4";
 
     // 키 디코딩
     private static final Key KEY = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET));
