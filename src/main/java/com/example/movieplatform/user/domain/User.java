@@ -1,13 +1,19 @@
 package com.example.movieplatform.user.domain;
 
+import com.example.movieplatform.user.domain.request.UserCreateRequest;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
+@Getter
 @Entity
 @Table(name = "users",
         uniqueConstraints = @UniqueConstraint(columnNames = "email"))
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -15,7 +21,7 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
-    private String username;
+    private String userName;
 
     // 로그인 용도
     @Column(nullable = false)
@@ -34,6 +40,28 @@ public class User {
     @Column(nullable = false, name = "birth")
     private LocalDate birthDay;
 
-    @Column(nullable = false, name = "create_at")
-    private LocalDateTime createAt;
+    private User(String userName,
+                 String email,
+                 String password,
+                 String phoneNumber,
+                 LocalDate birthDay,
+                 Boolean isAdmin) {
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.birthDay = birthDay;
+        this.isAdmin = isAdmin;
+    }
+
+    public static User of(UserCreateRequest request, String encodePassword) {
+        return new User(
+                request.username(),
+                request.email(),
+                encodePassword,
+                request.phoneNumber(),
+                request.birthDay(),
+                false
+        );
+    }
 }

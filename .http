@@ -1,0 +1,20 @@
+### 회원가입
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+  "username": "홍길동",
+  "email": "hong@test.com",
+  "password": "password123",
+  "phoneNumber": "01012345678",
+  "birthDay": "1990-01-01"
+}
+
+### 로그인 요청
+POST http://localhost:8080/users/sign
+Content-Type: application/json
+
+{
+  "email": "hong1@test.com",
+  "password": "password123"
+}
