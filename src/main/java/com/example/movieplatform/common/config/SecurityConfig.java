@@ -13,7 +13,7 @@ public class SecurityConfig {
         http
                 .securityMatcher("/**") // 모든 요청
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/users/signup", "/users/sign").permitAll()
+                        .requestMatchers("/users/signup", "/users/login", "/users/delete").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.disable()); // 람다 방식으로 CSRF 비활성화
