@@ -27,28 +27,6 @@ public class UserController {
         return ResponseEntity.ok("생성 성공");
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserLoginRequest request,
-                                        HttpServletResponse response) {
-        User user = userService.login(request);
-
-        String userRole = "Member";
-        if (user.getIsAdmin()) {
-            userRole = "Admin";
-        }
-
-        Cookie accessToken = new Cookie("ACCESSTOKEN",
-                jwtUtil.generateAccessToken(user.getUserName(), userRole));
-        Cookie refreshToken = new Cookie("REFRESHTOKEN",
-                jwtUtil.generateRefreshToken(user.getUserName()));
-
-        response.addCookie(accessToken);
-        response.addCookie(refreshToken);
-
-        return ResponseEntity.ok("로그인 성공\n엑세스 토큰:" + accessToken.getValue() + "\n리프레시 토큰:"
-                                + refreshToken.getValue());
-    }
-
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUser(@RequestBody UserDeleteRequest request) {
         userService.deleteUser(request);
