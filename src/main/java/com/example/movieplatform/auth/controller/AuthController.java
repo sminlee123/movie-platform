@@ -34,9 +34,9 @@ public class AuthController {
         }
 
         Cookie accessToken = new Cookie("ACCESSTOKEN",
-                jwtUtil.generateAccessToken(user.getUserName(), userRole));
+                jwtUtil.generateAccessToken(user.getEmail(), userRole));
         Cookie refreshToken = new Cookie("REFRESHTOKEN",
-                jwtUtil.generateRefreshToken(user.getUserName()));
+                jwtUtil.generateRefreshToken(user.getEmail()));
 
         response.addCookie(accessToken);
         response.addCookie(refreshToken);

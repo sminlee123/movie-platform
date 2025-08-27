@@ -9,4 +9,6 @@ public interface UserService {
     void createUser(UserCreateRequest request);
     User login(UserLoginRequest request);
     void deleteUser(UserDeleteRequest request);
+    User getUserByEmail(String email);
+    String getUserRole(String email);
 }
