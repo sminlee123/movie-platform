@@ -72,8 +72,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String getUserRole(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(UserNotFoundException::new);
+        User user = getUserByEmail(email);
 
         String role = "Member";
         if (user.getIsAdmin()) {

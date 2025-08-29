@@ -7,9 +7,11 @@ import com.example.movieplatform.user.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @Controller
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class AuthController {
     @PostMapping("/login")
     public String login(@ModelAttribute UserLoginRequest request,
                         HttpServletResponse response) {
+        log.info("Login Request: {}", request);
         User user = userService.login(request);
 
         String userRole = "Member";
@@ -40,6 +43,8 @@ public class AuthController {
 
         response.addCookie(accessToken);
         response.addCookie(refreshToken);
+
+        log.info("Login Success");
 
         return "home";
     }

@@ -60,7 +60,7 @@ public class JwtUtil {
         }
     }
 
-    // 유저 이름 반환
+    // 유저 이메일 반환
     public String getUserEmail(String token) {
         return parseClaims(token).getSubject();
     }
