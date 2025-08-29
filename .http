@@ -4,26 +4,23 @@ Content-Type: application/json
 
 {
   "username": "홍길동",
-  "email": "hong@test.com",
+  "email": "hong1@test.com",
   "password": "password123",
   "phoneNumber": "01012345678",
   "birthDay": "1990-01-01"
 }
 
 ### 로그인 요청
-POST http://localhost:8080/users/login
-Content-Type: application/json
+POST http://localhost:8080/auth/login
+Content-Type: application/x-www-form-urlencoded
 
-{
-  "email": "hong@test.com",
-  "password": "password123"
-}
+email=hong@test.com&password=password123
 
 ### 아이디 삭제
 DELETE http://localhost:8080/users/delete
 Content-Type: application/json
 
 {
-  "email": "hong@test.com",
+  "email": "hong1@test.com",
   "password": "password123"
 }

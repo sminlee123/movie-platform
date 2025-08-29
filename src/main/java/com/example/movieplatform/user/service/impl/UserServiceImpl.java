@@ -63,4 +63,22 @@ public class UserServiceImpl implements UserService {
 
         log.info("User deleted successfully: {}",  request.email());
     }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    @Override
+    public String getUserRole(String email) {
+        User user = getUserByEmail(email);
+
+        String role = "Member";
+        if (user.getIsAdmin()) {
+            role = "Admin";
+        }
+
+        return role;
+    }
 }

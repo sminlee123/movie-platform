@@ -21,9 +21,9 @@ public class JwtUtil {
     private static final Key KEY = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET));
 
     // 권한 넣기 (열거형으로 받아서 넣기?)
-    public String generateAccessToken(String username, String role) {
+    public String generateAccessToken(String userEmail, String role) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(userEmail)
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 만료 1시간
@@ -31,9 +31,9 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String generateRefreshToken(String username) {
+    public String generateRefreshToken(String userEmail) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(userEmail)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // 7일
                 .signWith(KEY)
@@ -60,8 +60,8 @@ public class JwtUtil {
         }
     }
 
-    // 유저 이름 반환
-    public String getUsername(String token) {
+    // 유저 이메일 반환
+    public String getUserEmail(String token) {
         return parseClaims(token).getSubject();
     }
 
