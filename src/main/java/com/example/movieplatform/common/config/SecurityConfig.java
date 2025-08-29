@@ -1,6 +1,8 @@
 package com.example.movieplatform.common.config;
 
 //import com.example.movieplatform.auth.filter.JwtCookieFilter;
+import com.example.movieplatform.auth.handler.CustomLoginSuccessHandler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,7 +10,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CustomLoginSuccessHandler customLoginSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -20,11 +25,13 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/auth/loginForm")  // 커스텀 로그인 폼 경로 지정
+                        .loginPage("/login")  // 커스텀 로그인 폼 경로 지정
+                        .loginProcessingUrl("/auth/login") // 로그인 처리
+                        .usernameParameter("email")  // 로그인 폼 email 필드명 맞춤
+                        .successHandler(customLoginSuccessHandler)
                         .permitAll()
                 )
                 .csrf(csrf -> csrf.disable()); // 람다 방식으로 CSRF 비활성화
-//                .addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -4,8 +4,8 @@ Content-Type: application/json
 
 {
   "username": "홍길동",
-  "email": "hong1@test.com",
-  "password": "password123",
+  "email": "admin@test.com",
+  "password": "123",
   "phoneNumber": "01012345678",
   "birthDay": "1990-01-01"
 }
