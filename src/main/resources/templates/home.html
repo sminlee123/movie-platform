@@ -14,5 +14,9 @@
 <!-- 인증되지 않은 사용자에게 로그인 버튼 표시 -->
 <button type="button" th:onclick="|location.href='@{/login}'|" sec:authorize="isAnonymous()">로그인</button>
 
+<p th:if="${name != null}">
+    안녕하세요, <span th:text="${name}"></span> 님!
+</p>
+
 </body>
 </html>
