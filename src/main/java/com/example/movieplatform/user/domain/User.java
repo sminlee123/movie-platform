@@ -64,4 +64,8 @@ public class User {
                 false
         );
     }
+
+    public String getRole() {
+        return isAdmin ? "Admin" : "Member";
+    }
 }
