@@ -1,4 +1,4 @@
-package com.example.movieplatform.user.exception;
+package com.example.movieplatform.auth.exception;
 
 import com.example.movieplatform.common.advice.ApiException;
 import org.springframework.http.HttpStatus;

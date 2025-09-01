@@ -52,8 +52,6 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         response.addCookie(accessToken);
         response.addCookie(refreshToken);
 
-        // 로그인 성공 후 원하는 경로로 리다이렉트
         response.sendRedirect("/");
-
     }
 }

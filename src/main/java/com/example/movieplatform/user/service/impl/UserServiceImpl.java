@@ -4,7 +4,7 @@ import com.example.movieplatform.user.domain.User;
 import com.example.movieplatform.user.domain.request.UserCreateRequest;
 import com.example.movieplatform.user.domain.request.UserDeleteRequest;
 import com.example.movieplatform.user.domain.request.UserLoginRequest;
-import com.example.movieplatform.user.exception.LoginFailException;
+import com.example.movieplatform.auth.exception.LoginFailException;
 import com.example.movieplatform.user.exception.NotMatchPasswordException;
 import com.example.movieplatform.user.exception.UserAlreadyExistsException;
 import com.example.movieplatform.user.exception.UserNotFoundException;
