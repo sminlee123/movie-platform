@@ -5,6 +5,10 @@
 </head>
 <body>
 <h1>로그인</h1>
+
+<!-- 에러 메시지 표시 -->
+<p th:if="${param.error}" th:text="${param.error}" style="color:blue;"></p>
+
 <form th:action="@{/login}" method="post">
     <div>
         <label for="email">이메일:</label>

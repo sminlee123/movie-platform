@@ -1,6 +1,7 @@
 package com.example.movieplatform.common.config;
 
 //import com.example.movieplatform.auth.filter.JwtCookieFilter;
+import com.example.movieplatform.auth.handler.CustomLoginFailHandler;
 import com.example.movieplatform.auth.handler.CustomLoginSuccessHandler;
 import com.example.movieplatform.auth.handler.CustomLogoutHandler;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final CustomLoginSuccessHandler customLoginSuccessHandler;
+    private final CustomLoginFailHandler customLoginFailHandler;
     private final CustomLogoutHandler customLogoutHandler;
 
     @Bean
@@ -24,6 +26,7 @@ public class SecurityConfig {
                 .securityMatcher("/**") // 모든 요청
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/").permitAll()
+                        .requestMatchers("/login").permitAll()
                         .requestMatchers("/users/signup", "/users/login", "/users/delete").permitAll()
                         .requestMatchers("/auth/**", "/users").permitAll()
                         .anyRequest().authenticated()
@@ -33,6 +36,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login") // 로그인 처리
                         .usernameParameter("email")
                         .successHandler(customLoginSuccessHandler)
+                        .failureHandler(customLoginFailHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -41,12 +45,6 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/")
                 )
                 .csrf(csrf -> csrf.disable()); // 람다 방식으로 CSRF 비활성화
-
-
-        http
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
 
         return http.build();
     }
