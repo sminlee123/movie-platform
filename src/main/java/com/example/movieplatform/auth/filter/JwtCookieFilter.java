@@ -75,7 +75,8 @@
             String role = jwtUtil.getRole(token);
 
             // 인증 객체 생성자에 들어갈 권한 컬렉션
-            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+            List<GrantedAuthority> authorities =
+                    List.of(new SimpleGrantedAuthority("ROLE_" + role));
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(userEmail, null, authorities);
