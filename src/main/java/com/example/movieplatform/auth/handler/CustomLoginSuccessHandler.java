@@ -37,7 +37,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         log.info(user.toString());
 
-        String userRole = user.getIsAdmin() ? "Admin" : "Member";
+        String userRole = user.getIsAdmin() ? "ADMIN" : "MEMBER";
 
         Cookie accessToken = new Cookie("ACCESSTOKEN",
                 jwtUtil.generateAccessToken(user.getEmail(), userRole));

@@ -3,17 +3,16 @@ package com.example.movieplatform.user.service.impl;
 import com.example.movieplatform.user.domain.User;
 import com.example.movieplatform.user.domain.request.UserCreateRequest;
 import com.example.movieplatform.user.domain.request.UserDeleteRequest;
-import com.example.movieplatform.user.domain.request.UserLoginRequest;
 import com.example.movieplatform.user.exception.NotMatchPasswordException;
 import com.example.movieplatform.user.exception.UserAlreadyExistsException;
 import com.example.movieplatform.user.exception.UserNotFoundException;
 import com.example.movieplatform.user.respository.UserRepository;
 import com.example.movieplatform.user.service.UserService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
