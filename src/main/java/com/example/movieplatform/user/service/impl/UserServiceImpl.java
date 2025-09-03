@@ -2,7 +2,6 @@ package com.example.movieplatform.user.service.impl;
 
 import com.example.movieplatform.user.domain.User;
 import com.example.movieplatform.user.domain.request.UserCreateRequest;
-import com.example.movieplatform.user.domain.request.UserDeleteRequest;
 import com.example.movieplatform.user.exception.NotMatchPasswordException;
 import com.example.movieplatform.user.exception.UserAlreadyExistsException;
 import com.example.movieplatform.user.exception.UserNotFoundException;
@@ -37,17 +36,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(UserDeleteRequest request) {
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(UserNotFoundException::new);
+    public void deleteUser(User user) {
 
-        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new NotMatchPasswordException();
-        }
+        // TODO 비밀번호 매치 추가
+//        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+//            throw new NotMatchPasswordException();
+//        }
 
         userRepository.delete(user);
 
-        log.info("User deleted successfully: {}",  request.email());
+        log.info("User deleted successfully: {}", user.getEmail());
     }
 
     @Override

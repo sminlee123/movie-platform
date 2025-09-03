@@ -10,6 +10,10 @@
 <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
     <button type="submit">로그아웃</button>
 </form>
+<!-- 로그인 상태일 때만 마이페이지 버튼 표시 -->
+<form th:action="@{/mypage}" method="get" sec:authorize="isAuthenticated()">
+    <button type="submit">마이페이지</button>
+</form>
 
 <!-- 인증되지 않은 사용자에게 로그인 버튼 표시 -->
 <button type="button" th:onclick="|location.href='@{/login}'|" sec:authorize="isAnonymous()">로그인</button>
