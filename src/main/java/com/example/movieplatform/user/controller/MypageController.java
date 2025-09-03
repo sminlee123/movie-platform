@@ -2,13 +2,12 @@ package com.example.movieplatform.user.controller;
 
 import com.example.movieplatform.auth.utils.AuthenticationUtil;
 import com.example.movieplatform.user.domain.User;
+import com.example.movieplatform.user.domain.request.UserUpdateRequest;
 import com.example.movieplatform.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/mypage")
@@ -32,6 +31,27 @@ public class MypageController {
         return "users/userinfo";
     }
 
+    // 수정 폼
+    @GetMapping("/edit")
+    public String showEditForm(Model model) {
+        User user = authenticationUtil.getCurrentUser();
+
+        UserUpdateRequest request = new UserUpdateRequest(
+                user.getUserName(),
+                user.getPhoneNumber(),
+                user.getBirthDay()
+        );
+        model.addAttribute("request", request);
+        return "users/editForm";
+    }
+
+    // 수정
+    @PostMapping("/edit")
+    public String edit(@ModelAttribute UserUpdateRequest request) {
+        User user = authenticationUtil.getCurrentUser();
+        userService.updateUser(user, request);
+        return "redirect:/mypage/me";
+    }
 
     // 탈퇴
     @DeleteMapping

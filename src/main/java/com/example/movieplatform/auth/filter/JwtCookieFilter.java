@@ -25,6 +25,8 @@
     public class JwtCookieFilter extends OncePerRequestFilter {
 
         private final JwtUtil jwtUtil;
+
+        // TODO customUserDetailService 를 사용하여 컨텍스트에 정보 저장하기 > 순환참조 해결 가능성
         private final UserService userService;
 
         @Override

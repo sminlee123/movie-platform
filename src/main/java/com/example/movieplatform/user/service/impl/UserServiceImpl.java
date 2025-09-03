@@ -2,7 +2,7 @@ package com.example.movieplatform.user.service.impl;
 
 import com.example.movieplatform.user.domain.User;
 import com.example.movieplatform.user.domain.request.UserCreateRequest;
-import com.example.movieplatform.user.exception.NotMatchPasswordException;
+import com.example.movieplatform.user.domain.request.UserUpdateRequest;
 import com.example.movieplatform.user.exception.UserAlreadyExistsException;
 import com.example.movieplatform.user.exception.UserNotFoundException;
 import com.example.movieplatform.user.respository.UserRepository;
@@ -49,12 +49,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public String getUserRole(String email) {
         User user = getUserByEmail(email);
 
@@ -64,5 +66,12 @@ public class UserServiceImpl implements UserService {
         }
 
         return role;
+    }
+
+    @Override
+    public void updateUser(User user, UserUpdateRequest request) {
+        user.changeUserName(request.userName());
+        user.changePhoneNumber(request.phoneNumber());
+        user.changeBirthDay(request.birthDay());
     }
 }
