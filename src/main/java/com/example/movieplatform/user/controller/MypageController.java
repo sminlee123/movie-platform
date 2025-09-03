@@ -32,11 +32,12 @@ public class MypageController {
         return "users/userinfo";
     }
 
+
+    // 탈퇴
     @DeleteMapping
     public String deleteMyInfo() {
         User user = authenticationUtil.getCurrentUser();
         userService.deleteUser(user);
         return "redirect:/logout";
     }
-
 }
