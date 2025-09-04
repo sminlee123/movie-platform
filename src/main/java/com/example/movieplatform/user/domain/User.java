@@ -64,4 +64,20 @@ public class User {
                 false
         );
     }
+
+    public String getRole() {
+        return isAdmin ? "Admin" : "Member";
+    }
+
+    public void changeUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void changePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void changeBirthDay(LocalDate birthDay) {
+        this.birthDay = birthDay;
+    }
 }
