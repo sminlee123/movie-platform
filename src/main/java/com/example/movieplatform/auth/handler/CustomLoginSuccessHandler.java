@@ -30,7 +30,6 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException, ServletException {
         log.info("Handler Start");
 
-        // 타입 캐스팅 다시보기
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         User user = userDetails.getUser();
