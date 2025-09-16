@@ -1,6 +1,7 @@
 package com.example.movieplatform.movie.domain.response;
 
 public record SimpleMovieResponse (
-        String title
+        String title,
+        String posterUrl
 ) {
 }

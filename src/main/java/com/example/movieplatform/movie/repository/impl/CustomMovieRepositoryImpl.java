@@ -24,7 +24,8 @@ public class CustomMovieRepositoryImpl implements CustomMovieRepository {
 
         List<SimpleMovieResponse> content = queryFactory
                 .select(Projections.constructor(SimpleMovieResponse.class,
-                        movie.title
+                        movie.title,
+                        movie.posterUrl
                 ))
                 .from(movie)
                 .offset(pageable.getOffset())

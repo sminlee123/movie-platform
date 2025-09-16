@@ -50,6 +50,7 @@ public class JwtCookieFilter extends OncePerRequestFilter {
 
             authenticateUser(newToken);
         }
+
         filterChain.doFilter(request, response);
     }
 
