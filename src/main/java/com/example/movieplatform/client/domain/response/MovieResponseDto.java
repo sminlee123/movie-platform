@@ -1,21 +1,16 @@
 package com.example.movieplatform.client.domain.response;
 
-public record MovieSearchResponse (
+public record MovieResponseDto(
+        String docid,
         String title,
-
         String titleEng,
-
         String directorNm,
-
         String company,
-
-        String releaseDate,
-
         String plot,
-
+        String posterUrl,
+        String ratingGrade,
+        String releaseDate,
         String runtime,
-
-        String posterUrl
-
+        String genre
 ) {
 }

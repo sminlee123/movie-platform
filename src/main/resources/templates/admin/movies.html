@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>영화 리스트</title>
+    <style>
+        /* 모달창을 위한 기본 스타일 */
+        .modal {
+            display: none; /* 기본적으로 숨김 */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>영화 관리</h1>
+
+<button id="addMovieBtn">영화 추가</button>
+
+<ul>
+    <li th:each="movie, stat : ${movies.content}">
+        <span th:text="${movie.title}">영화 제목</span>
+    </li>
+</ul>
+
+<div th:if="${!movies.empty}" style="text-align: center;">
+    <a th:if="${movies.hasPrevious()}" th:href="@{/admin/movies(page=${movies.number - 1})}">이전</a>
+    <span th:each="pageNumber : ${#numbers.sequence(0, movies.totalPages - 1)}">
+        <strong th:if="${pageNumber == movies.number}" th:text="${pageNumber + 1}"></strong>
+        <a th:if="${pageNumber != movies.number}" th:href="@{/admin/movies(page=${pageNumber})}" th:text="${pageNumber + 1}"></a>
+    </span>
+    <a th:if="${movies.hasNext()}" th:href="@{/admin/movies(page=${movies.number + 1})}">다음</a>
+</div>
+
+
+<div id="movieSearchModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>외부 영화 검색</h2>
+        <input type="text" id="searchQueryInput" placeholder="키워드 입력" style="width: 70%;">
+        <button id="searchOuterApiBtn">검색</button>
+        <hr>
+        <ul id="searchResultsList">
+        </ul>
+    </div>
+</div>
+
+
+<script>
+    // 1. 필요한 HTML 요소들을 가져옵니다.
+    const modal = document.getElementById('movieSearchModal');
+    const addMovieButton = document.getElementById('addMovieBtn');
+    const closeButton = document.querySelector('.close-button');
+    const searchButton = document.getElementById('searchOuterApiBtn');
+    const searchInput = document.getElementById('searchQueryInput');
+    const resultsList = document.getElementById('searchResultsList');
+
+    // 정보를 담을 변수
+    let currentSearchResults = [];
+
+    // 2. '영화 추가' 버튼을 누르면 모달창을 보여줍니다.
+    addMovieButton.onclick = function() {
+        modal.style.display = 'block';
+    }
+
+    // 3. 'X' 버튼을 누르면 모달창을 닫습니다.
+    closeButton.onclick = function() {
+        modal.style.display = 'none';
+        searchInput.value = ''; // 입력창 초기화
+        resultsList.innerHTML = ''; // 결과 목록 초기화
+    }
+
+    // 4. 모달창 바깥 영역을 클릭하면 모달창을 닫습니다.
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeButton.onclick(); // 닫기 버튼의 로직을 재사용
+        }
+    }
+
+    // 5. '검색' 버튼을 누르면 외부 API를 호출합니다.
+    searchButton.onclick = function() {
+        const query = searchInput.value;
+        if (!query) {
+            alert('검색어를 입력해주세요.');
+            return;
+        }
+
+        // Fetch API를 사용해 백엔드에 검색 요청
+        fetch(`/api/movies/search?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                resultsList.innerHTML = ''; // 이전 검색 결과 지우기
+
+                if (data.length === 0) {
+                    resultsList.innerHTML = '<li>검색 결과가 없습니다.</li>';
+                    return;
+                }
+
+                // 수정
+                currentSearchResults = data;
+
+                // (수정 3) 결과를 화면에 표시할 때 배열의 순서(index)를 함께 사용합니다.
+                data.forEach((movie, index) => {
+                    const listItem = document.createElement('li');
+                    const dateInfo = movie.releaseDate || '날짜 정보 없음';
+
+                    // (수정 4) selectMovie 함수에 docid 대신 index를 넘겨줍니다.
+                    listItem.innerHTML = `${movie.title} (${dateInfo}) <button onclick="selectMovie(${index})">선택</button>`;
+                    resultsList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultsList.innerHTML = '<li>검색 중 오류가 발생했습니다.</li>';
+            });
+    }
+
+    // 6. '선택' 버튼을 누르면 실행될 함수 (실제 등록 로직 필요)
+    function selectMovie(index) {
+        // (수정 5) index를 사용해 저장된 배열에서 선택된 영화의 전체 정보를 가져옵니다.
+        const selectedMovie = currentSearchResults[index];
+
+        if (confirm(`'${selectedMovie.title}' 영화를 등록하시겠습니까?`)) {
+
+            // fetch를 사용해 백엔드 등록 API에 POST 요청 전송
+            fetch('/admin/api/movies/register', { // 등록 컨트롤러 URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Spring Security CSRF 토큰이 필요한 경우 헤더에 추가해야 합니다.
+                    // 'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
+                },
+                credentials: 'same-origin', // 쿠키 추가
+                body: JSON.stringify(selectedMovie) // 선택한 영화 객체 전체를 JSON으로 변환하여 전송
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        // 서버에서 보낸 에러 메시지를 받기 위해 text()를 먼저 호출
+                        return response.text().then(text => { throw new Error(text) });
+                    }
+                })
+                .then(successMessage => {
+                    alert(successMessage);
+                    window.location.reload(); // 성공 시 페이지 새로고침
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(`등록 실패: ${error.message}`);
+                });
+        }
+    }
+</script>
+
+</body>
+</html>

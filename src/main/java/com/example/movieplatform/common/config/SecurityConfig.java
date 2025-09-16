@@ -30,6 +30,8 @@ public class SecurityConfig {
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/signup").permitAll()
                         .requestMatchers("/auth/**", "/users").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/movies/search").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
