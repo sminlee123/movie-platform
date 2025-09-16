@@ -54,6 +54,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
+
         http.addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
