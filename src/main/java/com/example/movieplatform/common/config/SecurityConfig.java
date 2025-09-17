@@ -4,10 +4,12 @@ import com.example.movieplatform.auth.filter.JwtCookieFilter;
 import com.example.movieplatform.auth.handler.CustomLoginFailHandler;
 import com.example.movieplatform.auth.handler.CustomLoginSuccessHandler;
 import com.example.movieplatform.auth.handler.CustomLogoutHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -29,6 +31,8 @@ public class SecurityConfig {
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/signup").permitAll()
                         .requestMatchers("/auth/**", "/users").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/movies/search").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -44,7 +48,23 @@ public class SecurityConfig {
                         .addLogoutHandler(customLogoutHandler)
                         .logoutSuccessUrl("/")
                 )
-                .csrf(csrf -> csrf.disable()); // 람다 방식으로 CSRF 비활성화
+                .csrf(csrf -> csrf.disable()) // 람다 방식으로 CSRF 비활성화
+
+                // 세션 STATELESS 설정
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(exception -> {
+                    // 인가(Authorization) 실패 시 (권한 없는 경우)
+                    exception.accessDeniedHandler((request, response, accessDeniedException) -> {
+                        response.sendRedirect("/");
+                    });
+                    // 인증(Authentication) 실패 시 (로그인 안 한 경우)
+                    exception.authenticationEntryPoint((request, response, authException) -> {
+                        response.sendRedirect("/login");
+                    });
+                });
+
 
         http.addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class);
 

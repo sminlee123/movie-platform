@@ -24,3 +24,6 @@ Content-Type: application/json
   "email": "hong1@test.com",
   "password": "password123"
 }
+
+### 영화 검색
+GET http://localhost:8080/movies

@@ -1,6 +1,6 @@
-    package com.example.movieplatform.auth.filter;
+package com.example.movieplatform.auth.filter;
 
-    import com.example.movieplatform.auth.utils.JwtUtil;
+import com.example.movieplatform.auth.utils.JwtUtil;
     import com.example.movieplatform.user.service.UserService;
     import jakarta.servlet.FilterChain;
     import jakarta.servlet.ServletException;
@@ -19,70 +19,65 @@
     import java.io.IOException;
     import java.util.List;
 
-    @Slf4j
-    @Component
-    @RequiredArgsConstructor
-    public class JwtCookieFilter extends OncePerRequestFilter {
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class JwtCookieFilter extends OncePerRequestFilter {
 
-        private final JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+    private final UserService userService;
 
-        // TODO customUserDetailService 를 사용하여 컨텍스트에 정보 저장하기 > 순환참조 해결 가능성
-        private final UserService userService;
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
-        @Override
-        protected void doFilterInternal(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        FilterChain filterChain) throws ServletException, IOException {
+        String accessToken = getTokenFromCookies(request, "ACCESSTOKEN");
+        String refreshToken = getTokenFromCookies(request, "REFRESHTOKEN");
 
-            String accessToken = getTokenFromCookies(request, "ACCESSTOKEN");
-            String refreshToken = getTokenFromCookies(request, "REFRESHTOKEN");
+        if (accessToken != null && jwtUtil.validateToken(accessToken)) {
+            authenticateUser(accessToken);
+        } else if (refreshToken != null && jwtUtil.validateToken(refreshToken)) {
+            String userEmail = jwtUtil.getUserEmail(refreshToken);
+            log.info("엑세스 발급");
+            String role = userService.getUserRole(userEmail);
 
-            if (accessToken != null && jwtUtil.validateToken(accessToken)) {
-                authenticateUser(accessToken);
-            } else if (refreshToken != null && jwtUtil.validateToken(refreshToken)) {
-                String userEmail = jwtUtil.getUserEmail(refreshToken);
-                log.info(userEmail);
-                String role = userService.getUserRole(userEmail);
+            // 리프레시 토큰으로 엑세스 토큰 재발급
+            String newToken = jwtUtil.generateAccessToken(userEmail, role);
 
-                // 리프레시 토큰으로 엑세스 토큰 재발급
-                String newToken = jwtUtil.generateAccessToken(userEmail, role);
+            Cookie cookie = new Cookie("ACCESSTOKEN", newToken);
+            response.addCookie(cookie);
 
-                Cookie cookie = new Cookie("ACCESSTOKEN", newToken);
-                response.addCookie(cookie);
-
-                authenticateUser(newToken);
-            } else  {
-                // 토큰 둘 다 없을때 컨텍스트 한번 초기화
-                // TODO 초기화만 하는게 맞을까
-                SecurityContextHolder.clearContext();
-            }
-            filterChain.doFilter(request, response);
+            authenticateUser(newToken);
         }
 
-        // 쿠키 추출 메서드
-        private String getTokenFromCookies(HttpServletRequest request, String name) {
-            if (request.getCookies() != null) {
-                for (Cookie cookie : request.getCookies()) {
-                    if (cookie.getName().equals(name)) {
-                        return cookie.getValue();
-                    }
+        filterChain.doFilter(request, response);
+    }
+
+    // 쿠키 추출 메서드
+    private String getTokenFromCookies(HttpServletRequest request, String name) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals(name)) {
+                    return cookie.getValue();
                 }
             }
-            return null;
         }
-
-        // 인증 정보를 컨텍스트 홀더에 저장
-        private void authenticateUser(String token) {
-            String userEmail = jwtUtil.getUserEmail(token);
-            String role = jwtUtil.getRole(token);
-
-            // 인증 객체 생성자에 들어갈 권한 컬렉션
-            List<GrantedAuthority> authorities =
-                    List.of(new SimpleGrantedAuthority("ROLE_" + role));
-
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userEmail, null, authorities);
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
+        return null;
     }
+
+    // 인증 정보를 컨텍스트 홀더에 저장
+    private void authenticateUser(String token) {
+        String userEmail = jwtUtil.getUserEmail(token);
+        String role = jwtUtil.getRole(token);
+
+        // 인증 객체 생성자에 들어갈 권한 컬렉션
+        List<GrantedAuthority> authorities =
+                List.of(new SimpleGrantedAuthority("ROLE_" + role));
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userEmail, null, authorities);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+}

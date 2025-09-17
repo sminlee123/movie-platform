@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 public class AdminUtil {
 
     // 컨텍스트 홀더에서 관리자 권한인지 체크하는 유틸
+    // 필요한가?
 
     public void isAdmin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
