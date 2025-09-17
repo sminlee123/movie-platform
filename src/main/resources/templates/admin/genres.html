@@ -6,12 +6,16 @@
 </head>
 <body>
 <h1>장르 리스트</h1>
+<form th:action="@{/admin/genres/create}" method="get">
+    <button type="submit">장르 추가</button>
+</form>
+
 <ul>
     <!-- th:each로 Genre 객체를 반복 출력 -->
     <li th:each="genre : ${genres}">
         <span>ID: <span th:text="${genre.id}">1</span></span> -
         <span>이름: <span th:text="${genre.name}">액션</span></span>
-        <form th:action="@{'/genres/' + ${genre.id}}" method="post" style="display:inline;">
+        <form th:action="@{/admin/genres/{id}(id=${genre.id})}" method="post" style="display:inline;">
             <input type="hidden" name="_method" value="delete"/>
             <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
         </form>

@@ -9,6 +9,8 @@ import com.example.movieplatform.genre.exception.GenreNotExistsException;
 import com.example.movieplatform.genre.repository.GenreRepository;
 import com.example.movieplatform.genre.service.GenreService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,10 +41,7 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public List<GenreResponse> listGenres() {
-        return genreRepository.findAll()
-                .stream()
-                .map(genre -> new GenreResponse(genre.getId(), genre.getName()))
-                .toList();
+    public Page<GenreResponse> allGenres(Pageable pageable) {
+        return genreRepository.findAllGenres(pageable);
     }
 }
