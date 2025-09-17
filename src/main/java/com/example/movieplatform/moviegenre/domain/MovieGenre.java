@@ -34,4 +34,9 @@ public class MovieGenre {
     public static MovieGenre valueOf(Movie movie, Genre genre) {
         return new MovieGenre(movie, genre);
     }
+
+    public String getGenreName() {
+        return genre.getName();
+    }
+
 }

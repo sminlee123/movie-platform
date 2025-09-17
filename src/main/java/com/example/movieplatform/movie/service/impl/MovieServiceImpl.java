@@ -4,6 +4,7 @@ import com.example.movieplatform.client.domain.response.MovieResponseDto;
 import com.example.movieplatform.genre.domain.Genre;
 import com.example.movieplatform.genre.repository.GenreRepository;
 import com.example.movieplatform.movie.domain.Movie;
+import com.example.movieplatform.movie.domain.response.MovieDetailResponse;
 import com.example.movieplatform.movie.domain.response.SimpleMovieResponse;
 import com.example.movieplatform.movie.exception.MovieAlreadyExistsException;
 import com.example.movieplatform.movie.exception.MovieNotExistsException;
@@ -52,6 +53,12 @@ public class MovieServiceImpl implements MovieService {
         Movie movie = movieRepository.findByid(id)
                 .orElseThrow(MovieNotExistsException::new);
         movieRepository.delete(movie);
+    }
+
+    @Override
+    public MovieDetailResponse getMovieDetailById(Long id) {
+        return movieRepository.getMovieDetailById(id)
+                .orElseThrow(MovieNotExistsException::new);
     }
 
     public void existsMovieByDocid(String docid) {

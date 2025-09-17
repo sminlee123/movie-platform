@@ -1,6 +1,7 @@
 package com.example.movieplatform.movie.controller;
 
 import com.example.movieplatform.client.domain.response.MovieResponseDto;
+import com.example.movieplatform.movie.domain.response.MovieDetailResponse;
 import com.example.movieplatform.movie.domain.response.SimpleMovieResponse;
 import com.example.movieplatform.movie.service.MovieService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,13 @@ public class AdminMovieController {
         Page<SimpleMovieResponse> movies = movieService.allMovies(pageable);
         model.addAttribute("movies", movies);
         return "admin/movies";
+    }
+
+    @GetMapping("/{id}")
+    public String getMovieDetail(@PathVariable Long id, Model model) {
+        MovieDetailResponse detail = movieService.getMovieDetailById(id);
+        model.addAttribute("movieDetail", detail);
+        return "admin/movieDetail";
     }
 
     @PostMapping
