@@ -46,16 +46,6 @@
     </li>
 </ul>
 
-<div th:if="${!movies.empty}" style="text-align: center;">
-    <a th:if="${movies.hasPrevious()}" th:href="@{/admin/movies(page=${movies.number - 1})}">이전</a>
-    <span th:each="pageNumber : ${#numbers.sequence(0, movies.totalPages - 1)}">
-        <strong th:if="${pageNumber == movies.number}" th:text="${pageNumber + 1}"></strong>
-        <a th:if="${pageNumber != movies.number}" th:href="@{/admin/movies(page=${pageNumber})}" th:text="${pageNumber + 1}"></a>
-    </span>
-    <a th:if="${movies.hasNext()}" th:href="@{/admin/movies(page=${movies.number + 1})}">다음</a>
-</div>
-
-
 <div id="movieSearchModal" class="modal">
     <div class="modal-content">
         <span class="close-button">&times;</span>
