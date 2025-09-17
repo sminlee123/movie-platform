@@ -8,4 +8,5 @@ import org.springframework.data.domain.Pageable;
 public interface MovieService {
     Page<SimpleMovieResponse> allMovies(Pageable pageable);
     void registerMovie(MovieResponseDto response);
+    void deleteMovie(Long id);
 }

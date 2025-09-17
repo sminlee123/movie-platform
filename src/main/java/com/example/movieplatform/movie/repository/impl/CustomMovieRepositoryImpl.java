@@ -24,6 +24,7 @@ public class CustomMovieRepositoryImpl implements CustomMovieRepository {
 
         List<SimpleMovieResponse> content = queryFactory
                 .select(Projections.constructor(SimpleMovieResponse.class,
+                        movie.id,
                         movie.title,
                         movie.posterUrl
                 ))

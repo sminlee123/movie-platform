@@ -6,6 +6,7 @@ import com.example.movieplatform.genre.repository.GenreRepository;
 import com.example.movieplatform.movie.domain.Movie;
 import com.example.movieplatform.movie.domain.response.SimpleMovieResponse;
 import com.example.movieplatform.movie.exception.MovieAlreadyExistsException;
+import com.example.movieplatform.movie.exception.MovieNotExistsException;
 import com.example.movieplatform.movie.repository.MovieRepository;
 import com.example.movieplatform.movie.service.MovieService;
 import com.example.movieplatform.moviegenre.domain.MovieGenre;
@@ -44,6 +45,13 @@ public class MovieServiceImpl implements MovieService {
 
         // 장르 연결
         saveMovieGenre(savedMovie, response.genre());
+    }
+
+    @Override
+    public void deleteMovie(Long id) {
+        Movie movie = movieRepository.findByid(id)
+                .orElseThrow(MovieNotExistsException::new);
+        movieRepository.delete(movie);
     }
 
     public void existsMovieByDocid(String docid) {

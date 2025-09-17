@@ -43,4 +43,10 @@ public class AdminMovieController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public String deleteMovie(@PathVariable Long id) {
+        movieService.deleteMovie(id);
+        return "redirect:/admin/movies";
+    }
+
 }

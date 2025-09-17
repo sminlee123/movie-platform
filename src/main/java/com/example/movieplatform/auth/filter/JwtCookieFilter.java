@@ -39,7 +39,7 @@ public class JwtCookieFilter extends OncePerRequestFilter {
             authenticateUser(accessToken);
         } else if (refreshToken != null && jwtUtil.validateToken(refreshToken)) {
             String userEmail = jwtUtil.getUserEmail(refreshToken);
-            log.info(userEmail);
+            log.info("엑세스 발급");
             String role = userService.getUserRole(userEmail);
 
             // 리프레시 토큰으로 엑세스 토큰 재발급
