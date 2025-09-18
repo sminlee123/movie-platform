@@ -15,4 +15,6 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     @Query("SELECT count(s) FROM Seat s WHERE s.screen = :screen AND s.available = true")
     Long countAvailableSeatsByScreen(Screen screen);
+
+    void deleteAllByScreen(Screen screen);
 }

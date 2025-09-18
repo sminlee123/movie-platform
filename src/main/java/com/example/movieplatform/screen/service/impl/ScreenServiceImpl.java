@@ -2,12 +2,16 @@ package com.example.movieplatform.screen.service.impl;
 
 import com.example.movieplatform.screen.domain.Screen;
 import com.example.movieplatform.screen.domain.request.ScreenCreateRequest;
+import com.example.movieplatform.screen.domain.response.ScreenResponse;
 import com.example.movieplatform.screen.exception.ScreenAlreadyExistsException;
 import com.example.movieplatform.screen.exception.ScreenNotFoundException;
 import com.example.movieplatform.screen.repository.ScreenRepository;
+import com.example.movieplatform.screen.repository.SeatRepository;
 import com.example.movieplatform.screen.service.ScreenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +24,7 @@ import java.util.List;
 public class ScreenServiceImpl implements ScreenService {
 
     private final ScreenRepository screenRepository;
+    private final SeatRepository seatRepository;
 
     @Override
     public Long createScreen(ScreenCreateRequest request) {
@@ -34,23 +39,23 @@ public class ScreenServiceImpl implements ScreenService {
 
     @Override
     public void deleteScreen(Long screenId) {
-        if(!screenRepository.existsById(screenId)){
-            throw new ScreenNotFoundException();
-        }
+        Screen screen = screenRepository.findById(screenId)
+                .orElseThrow(ScreenNotFoundException::new);
+        seatRepository.deleteAllByScreen(screen);
         screenRepository.deleteById(screenId);
-        log.info("Deleted Screen with id {}", screenId);
+        log.info("Delete Screen with id {}", screenId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Screen> getAllScreens() {
-        return screenRepository.findAll();
+    public Page<ScreenResponse> getAllScreens(Pageable pageable) {
+        return screenRepository.findAllScreens(pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Screen getScreenById(Long id) {
-        return screenRepository.findById(id)
+    public ScreenResponse getScreenById(Long id) {
+        return screenRepository.responseFindById(id)
                 .orElseThrow(ScreenNotFoundException::new);
     }
 }

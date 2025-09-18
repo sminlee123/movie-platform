@@ -11,7 +11,7 @@
 </form>
 
 <ul>
-    <li th:each="screen : ${screens}">
+    <li th:each="screen : ${screens.content}">
         <span>ID: <span th:text="${screen.id}"></span></span> -
         <span>이름: <span th:text="${screen.name}"></span></span>
         <form th:action="@{/admin/screens/{id}(id=${screen.id})}" method="get">
