@@ -1,4 +1,4 @@
-package com.example.movieplatform.genre.domain;
+package com.example.movieplatform.screen.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "genres",
+@Table(name = "screens",
         uniqueConstraints = @UniqueConstraint(columnNames = {"name"}))
 @NoArgsConstructor
 @AllArgsConstructor
-public class Genre {
+public class Screen {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,7 @@ public class Genre {
     @Column(nullable = false)
     private String name;
 
-    public Genre(String name) {
+    public Screen(String name) {
         this.name = name;
     }
 }

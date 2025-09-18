@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-
 @Repository
 public interface MovieGenreRepository extends JpaRepository<MovieGenre, Long> {
     Optional<MovieGenre> findByMovieAndGenre(Movie movie, Genre genre);

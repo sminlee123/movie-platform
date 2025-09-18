@@ -23,7 +23,6 @@ public class AdminGenreController {
 
     private final GenreService genreService;
 
-    // 장르페이지 페이징처리하기
     @GetMapping
     public String genrePage(@PageableDefault(size = 10, page = 0) Pageable pageable,
                             Model model) {

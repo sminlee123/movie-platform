@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>상영관 상세정보</title>
+</head>
+<body>
+<h1 th:text="|${screen.name} (ID: ${screen.id})|">상영관 정보</h1>
+<h3 th:text="|전체 좌석: ${allCount}|">전체 좌석</h3>
+<h3 th:text="|이용가능 좌석: ${availableCount}|">이용가능 좌석</h3>
+
+<hr>
+
+<h2>좌석 예매 테스트</h2>
+<form id="bookForm">
+    <input type="hidden" id="screenId" name="screenId" th:value="${screen.id}">
+
+    <div>
+        <label for="seatName">예매할 좌석 이름:</label>
+        <input type="text" id="seatName" name="seatName" placeholder="예: A1" required>
+    </div>
+
+    <button type="button" onclick="bookSeat()">좌석 예매하기</button>
+</form>
+
+<script>
+    function bookSeat() {
+        const screenIdValue = document.getElementById('screenId').value;
+        const seatNameValue = document.getElementById('seatName').value;
+
+        if (!seatNameValue) {
+            alert('좌석 이름을 입력해주세요.');
+            return;
+        }
+
+        // 서버의 @RequestBody DTO와 형식을 맞춰 JSON 데이터 생성
+        const requestData = {
+            screenId: screenIdValue,
+            seatName: seatNameValue
+        };
+
+        // fetch API를 사용하여 PATCH 요청 보내기
+        fetch('/admin/seats/book', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.text(); // 성공 응답의 본문을 텍스트로 읽음
+                }
+                throw new Error('좌석을 예매할 수 없습니다.');
+            })
+            .then(data => {
+                alert('요청 성공: ' + data); // 컨트롤러에서 보낸 성공 메시지 출력
+                window.location.reload(); // 예매 성공 후 페이지를 새로고침하여 남은 좌석 수를 갱신
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error.message);
+            });
+    }
+</script>
+</body>
+</html>
