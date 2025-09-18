@@ -22,13 +22,14 @@ public class ScreenServiceImpl implements ScreenService {
     private final ScreenRepository screenRepository;
 
     @Override
-    public void createScreen(ScreenCreateRequest request) {
+    public Long createScreen(ScreenCreateRequest request) {
         if(screenRepository.existsByName(request.name())){
             throw new ScreenAlreadyExistsException();
         }
         Screen screen = new Screen(request.name());
-        screenRepository.save(screen);
+        Screen savedScreen = screenRepository.save(screen);
         log.info("Created Screen with name {}", screen.getName());
+        return savedScreen.getId();
     }
 
     @Override
@@ -41,11 +42,13 @@ public class ScreenServiceImpl implements ScreenService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Screen> getAllScreens() {
         return screenRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Screen getScreenById(Long id) {
         return screenRepository.findById(id)
                 .orElseThrow(ScreenNotFoundException::new);

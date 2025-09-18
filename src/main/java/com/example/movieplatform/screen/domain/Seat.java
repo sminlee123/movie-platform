@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "screens",
+@Table(name = "seats",
         uniqueConstraints = @UniqueConstraint(columnNames = {"name"}))
 @NoArgsConstructor
 @AllArgsConstructor
-public class Screen {
+public class Seat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,20 @@ public class Screen {
     @Column(nullable = false)
     private String name;
 
-    public Screen(String name) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "screen_id")
+    private Screen screen;
+
+    @Column(nullable = false, name = "is_available")
+    private Boolean available;
+
+    public Seat(String name, Screen screen) {
         this.name = name;
+        this.screen = screen;
+        this.available = true;
+    }
+
+    public void updateAvailability(boolean available) {
+        this.available = available;
     }
 }
