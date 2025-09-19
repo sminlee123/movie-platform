@@ -1,10 +1,11 @@
 package com.example.movieplatform.screen.controller;
 
-import com.example.movieplatform.screen.domain.Screen;
 import com.example.movieplatform.screen.domain.request.ScreenCreateRequest;
 import com.example.movieplatform.screen.domain.response.ScreenResponse;
 import com.example.movieplatform.screen.service.ScreenService;
 import com.example.movieplatform.screen.service.SeatService;
+import com.example.movieplatform.showinginfo.domain.response.ShowingInfoResponse;
+import com.example.movieplatform.showinginfo.service.ShowingInfoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class AdminScreenController {
 
     private final ScreenService screenService;
     private final SeatService seatService;
+    private final ShowingInfoService showingInfoService;
 
     @GetMapping
     public String screenPage(@PageableDefault(size = 10, page = 0) Pageable pageable,
@@ -34,19 +36,28 @@ public class AdminScreenController {
     }
 
     @GetMapping("/{id}")
-    public String screenDetail(@PathVariable Long id, Model model) {
+    public String screenDetail(@PageableDefault(size = 10, page = 0) Pageable pageable,
+                               @PathVariable Long id, Model model) {
         ScreenResponse response = screenService.getScreenById(id);
+        Page<ShowingInfoResponse> showingInfo = showingInfoService.getShowingInfos(pageable, id);
         Long allCount = seatService.countAllSeats(id);
         Long availableCount = seatService.countAvailableSeats(id);
         model.addAttribute("screen", response);
         model.addAttribute("allCount", allCount);
         model.addAttribute("availableCount", availableCount);
+        model.addAttribute("showingInfo", showingInfo);
         return "admin/screenDetail";
     }
 
     @GetMapping("/create")
     public String createForm(){
         return "admin/screenCreate";
+    }
+
+    @GetMapping("/{id}/showings/create")
+    public String createShowingForm(@PathVariable Long id, Model model){
+        model.addAttribute("screenId", id);
+        return "/admin/showingCreate";
     }
 
     @PostMapping()
