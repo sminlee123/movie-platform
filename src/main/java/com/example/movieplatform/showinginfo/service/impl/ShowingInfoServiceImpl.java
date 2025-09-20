@@ -9,6 +9,8 @@ import com.example.movieplatform.screen.repository.ScreenRepository;
 import com.example.movieplatform.showinginfo.domain.ShowingInfo;
 import com.example.movieplatform.showinginfo.domain.request.ShowingInfoCreateRequest;
 import com.example.movieplatform.showinginfo.domain.response.ShowingInfoResponse;
+import com.example.movieplatform.showinginfo.exception.ShowingDateException;
+import com.example.movieplatform.showinginfo.exception.ShowingInfoAlreadyExistsException;
 import com.example.movieplatform.showinginfo.exception.ShowingInfoNotExistsException;
 import com.example.movieplatform.showinginfo.repository.ShowingInfoRepository;
 import com.example.movieplatform.showinginfo.service.ShowingInfoService;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Slf4j
@@ -32,12 +35,20 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
     private final ScreenRepository screenRepository;
 
     @Override
-    public void createShowingInfo(ShowingInfoCreateRequest request) {
+    public Long createShowingInfo(ShowingInfoCreateRequest request) {
+        if (request.showingDate().isBefore(LocalDate.now())) {
+            throw new ShowingDateException();
+        }
+
         Movie movie = movieRepository.findByid(request.movieId())
                 .orElseThrow(MovieNotExistsException::new);
 
         Screen screen = screenRepository.findById(request.screenId())
                 .orElseThrow(ScreenNotFoundException::new);
+
+        if (showingInfoRepository.existsByScreenAndShowingDate(screen, request.showingDate())) {
+            throw new ShowingInfoAlreadyExistsException();
+        }
 
         long runtime = Long.parseLong(movie.getRuntime());
         LocalTime startTime = request.startTime();
@@ -47,6 +58,8 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
         showingInfoRepository.save(showingInfo);
 
         log.info("Create ShowingInfo: {}", request);
+
+        return request.screenId();
     }
 
     @Override
