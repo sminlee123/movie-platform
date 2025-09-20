@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ShowingInfoService {
-    void createShowingInfo(ShowingInfoCreateRequest request);
+    Long createShowingInfo(ShowingInfoCreateRequest request);
     Page<ShowingInfoResponse> getShowingInfos(Pageable pageable, Long screenId);
     Long deleteShowingInfo(Long showingInfoId);
 }

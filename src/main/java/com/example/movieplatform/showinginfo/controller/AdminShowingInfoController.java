@@ -18,8 +18,8 @@ public class AdminShowingInfoController {
 
     @PostMapping
     public String createShowingInfo(@ModelAttribute ShowingInfoCreateRequest request, Model model) {
-        showingInfoService.createShowingInfo(request);
-        return "redirect:/admin/showings";
+        Long screenId = showingInfoService.createShowingInfo(request);
+        return "redirect:/admin/screens/" + screenId;
     }
 
     @DeleteMapping("/{id}")
