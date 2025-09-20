@@ -40,11 +40,7 @@ public class AdminScreenController {
                                @PathVariable Long id, Model model) {
         ScreenResponse response = screenService.getScreenById(id);
         Page<ShowingInfoResponse> showingInfo = showingInfoService.getShowingInfos(pageable, id);
-        Long allCount = seatService.countAllSeats(id);
-        Long availableCount = seatService.countAvailableSeats(id);
         model.addAttribute("screen", response);
-        model.addAttribute("allCount", allCount);
-        model.addAttribute("availableCount", availableCount);
         model.addAttribute("showingInfo", showingInfo);
         return "admin/screenDetail";
     }

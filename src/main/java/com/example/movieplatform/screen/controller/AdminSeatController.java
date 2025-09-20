@@ -24,11 +24,11 @@ public class AdminSeatController {
 //    }
 
     // 임시
-    @PostMapping("/book")
-    public ResponseEntity<String> bookSeat(@RequestBody SeatDeleteRequest request) {
-        log.info(request.toString());
-        seatService.deleteSeats(request);
-        return ResponseEntity.ok("좌석 예매가 완료되었습니다.");
-    }
+//    @PostMapping("/book")
+//    public ResponseEntity<String> bookSeat(@RequestBody SeatDeleteRequest request) {
+//        log.info(request.toString());
+//        seatService.deleteSeats(request);
+//        return ResponseEntity.ok("좌석 예매가 완료되었습니다.");
+//    }
 
 }
