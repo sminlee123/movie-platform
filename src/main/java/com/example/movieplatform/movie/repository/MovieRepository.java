@@ -13,5 +13,5 @@ import java.util.Optional;
 public interface MovieRepository extends JpaRepository<Movie, Long>, CustomMovieRepository {
     Page<Movie> findAll(Pageable pageable);
     boolean existsByDocid(String docid);
-    Optional<Movie> findByid(Long docid);
+    Optional<Movie> findByid(Long id);
 }

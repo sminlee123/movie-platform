@@ -3,6 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>상영관 상세정보</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .pagination { display: flex; justify-content: center; margin-top: 20px; }
+        .pagination a, .pagination span { margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; color: #007bff; }
+        .pagination .current { font-weight: bold; background-color: #007bff; color: white; border-color: #007bff; }
+        .pagination .disabled { color: #ccc; pointer-events: none; }
+    </style>
 </head>
 <body>
 <h1 th:text="|${screen.name} (ID: ${screen.id})|">상영관 정보</h1>
@@ -10,6 +19,55 @@
 <h3 th:text="|이용가능 좌석: ${availableCount}|">이용가능 좌석</h3>
 
 <hr>
+
+<h4>상영정보</h4>
+<form th:action="@{/admin/screens/{id}/showings/create(id=${screen.id})}" method="get">
+    <button type="submit">상영정보 등록</button>
+</form>
+
+<div th:if="${!showingInfo.empty}">
+    <table>
+        <thead>
+        <tr>
+            <th>영화 이름</th>
+            <th>상영 날짜</th>
+            <th>시작 시간</th>
+            <th>종료 시간</th>
+            <th>가격</th>
+            <th>관리</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="showing : ${showingInfo.content}">
+            <td th:text="${showing.movieName}">영화 이름</td>
+            <td th:text="${showing.showingDate}">2025-10-01</td>
+            <td th:text="${showing.startTime}">14:30</td>
+            <td th:text="${showing.endTime}">16:40</td>
+            <td th:text="${showing.price}">15000</td>
+            <td>
+                <form th:action="@{/admin/showings/{id}(id=${showing.id})}" method="post">
+                    <input type="hidden" name="_method" value="delete"/>
+                    <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="pagination" th:if="${showingInfo.totalPages > 1}">
+    <a th:href="@{/admin/screen/{id}(id=${screen.id}, page=${showingInfo.number - 1})}"
+       th:classappend="${showingInfo.first} ? 'disabled'">이전</a>
+
+    <span th:each="pageNum : ${#numbers.sequence(0, showingInfo.totalPages - 1)}">
+            <a th:href="@{/admin/screen/{id}(id=${screen.id}, page=${pageNum})}"
+               th:text="${pageNum + 1}"
+               th:classappend="${pageNum == showingInfo.number} ? 'current'"></a>
+        </span>
+
+    <a th:href="@{/admin/screen/{id}(id=${screen.id}, page=${showingInfo.number + 1})}"
+       th:classappend="${showingInfo.last} ? 'disabled'">다음</a>
+</div>
 
 <h2>좌석 예매 테스트</h2>
 <form id="bookForm">
