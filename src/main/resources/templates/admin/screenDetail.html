@@ -34,6 +34,9 @@
             <th>시작 시간</th>
             <th>종료 시간</th>
             <th>가격</th>
+            <th>전체 좌석</th>
+            <th>예매된 좌석</th>
+            <th>남은 좌석</th>
             <th>관리</th>
         </tr>
         </thead>
@@ -44,6 +47,9 @@
             <td th:text="${showing.startTime}">14:30</td>
             <td th:text="${showing.endTime}">16:40</td>
             <td th:text="${showing.price}">15000</td>
+            <td th:text="${showing.totalSeatCount}">전체 좌석</td>
+            <td th:text="${showing.bookSeatCount}">예매된 좌석</td>
+            <td th:text="${showing.availableSeatCount}">남은 좌석</td>
             <td>
                 <form th:action="@{/admin/showings/{id}(id=${showing.id})}" method="post">
                     <input type="hidden" name="_method" value="delete"/>
