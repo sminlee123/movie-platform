@@ -15,8 +15,6 @@
 </head>
 <body>
 <h1 th:text="|${screen.name} (ID: ${screen.id})|">상영관 정보</h1>
-<h3 th:text="|전체 좌석: ${allCount}|">전체 좌석</h3>
-<h3 th:text="|이용가능 좌석: ${availableCount}|">이용가능 좌석</h3>
 
 <hr>
 
@@ -34,6 +32,10 @@
             <th>시작 시간</th>
             <th>종료 시간</th>
             <th>가격</th>
+            <th>전체 좌석</th>
+            <th>예매된 좌석</th>
+            <th>남은 좌석</th>
+            <th>예매 테스트</th>
             <th>관리</th>
         </tr>
         </thead>
@@ -44,6 +46,17 @@
             <td th:text="${showing.startTime}">14:30</td>
             <td th:text="${showing.endTime}">16:40</td>
             <td th:text="${showing.price}">15000</td>
+            <td th:text="${showing.totalSeatCount}">전체 좌석</td>
+            <td th:text="${showing.bookSeatCount}">예매된 좌석</td>
+            <td th:text="${showing.availableSeatCount}">남은 좌석</td>
+            <td>
+                <form th:action="@{/admin/tickets}" method="post">
+                    <input type="hidden" name="showingInfoId" th:value="${showing.id}">
+                    <label for="seatName">예매할 좌석 이름:</label>
+                        <input type="text" id="seatName" name="seatName" placeholder="예: A1" required>
+                    <button type="submit">예매</button>
+                </form>
+            </td>
             <td>
                 <form th:action="@{/admin/showings/{id}(id=${showing.id})}" method="post">
                     <input type="hidden" name="_method" value="delete"/>
@@ -68,58 +81,5 @@
     <a th:href="@{/admin/screen/{id}(id=${screen.id}, page=${showingInfo.number + 1})}"
        th:classappend="${showingInfo.last} ? 'disabled'">다음</a>
 </div>
-
-<h2>좌석 예매 테스트</h2>
-<form id="bookForm">
-    <input type="hidden" id="screenId" name="screenId" th:value="${screen.id}">
-
-    <div>
-        <label for="seatName">예매할 좌석 이름:</label>
-        <input type="text" id="seatName" name="seatName" placeholder="예: A1" required>
-    </div>
-
-    <button type="button" onclick="bookSeat()">좌석 예매하기</button>
-</form>
-
-<script>
-    function bookSeat() {
-        const screenIdValue = document.getElementById('screenId').value;
-        const seatNameValue = document.getElementById('seatName').value;
-
-        if (!seatNameValue) {
-            alert('좌석 이름을 입력해주세요.');
-            return;
-        }
-
-        // 서버의 @RequestBody DTO와 형식을 맞춰 JSON 데이터 생성
-        const requestData = {
-            screenId: screenIdValue,
-            seatName: seatNameValue
-        };
-
-        // fetch API를 사용하여 PATCH 요청 보내기
-        fetch('/admin/seats/book', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.text(); // 성공 응답의 본문을 텍스트로 읽음
-                }
-                throw new Error('좌석을 예매할 수 없습니다.');
-            })
-            .then(data => {
-                alert('요청 성공: ' + data); // 컨트롤러에서 보낸 성공 메시지 출력
-                window.location.reload(); // 예매 성공 후 페이지를 새로고침하여 남은 좌석 수를 갱신
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert(error.message);
-            });
-    }
-</script>
 </body>
 </html>

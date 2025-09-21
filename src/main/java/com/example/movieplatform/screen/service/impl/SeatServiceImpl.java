@@ -2,10 +2,8 @@ package com.example.movieplatform.screen.service.impl;
 
 import com.example.movieplatform.screen.domain.Screen;
 import com.example.movieplatform.screen.domain.Seat;
-import com.example.movieplatform.screen.domain.request.SeatDeleteRequest;
 import com.example.movieplatform.screen.domain.request.SeatGenerateRequest;
 import com.example.movieplatform.screen.exception.ScreenNotFoundException;
-import com.example.movieplatform.screen.exception.SeatNotAvailableException;
 import com.example.movieplatform.screen.repository.ScreenRepository;
 import com.example.movieplatform.screen.repository.SeatRepository;
 import com.example.movieplatform.screen.service.SeatService;
@@ -66,38 +64,11 @@ public class SeatServiceImpl implements SeatService {
         seatRepository.saveAll(seats);
     }
 
-    // TODO 좌석 구매 시 상태 변경하려는 로직 (서비스 메서드 이름 고민중)
-    @Override
-    public void deleteSeats(SeatDeleteRequest request) {
-        Screen screen = screenRepository.findById(request.screenId())
-                .orElseThrow(ScreenNotFoundException::new);
-
-        Seat seat = seatRepository.findByNameAndScreen(request.seatName(), screen)
-                .orElseThrow(ScreenNotFoundException::new);
-
-        if(!seat.getAvailable()) {
-            throw new SeatNotAvailableException();
-        }
-
-        // 상태변경
-        seat.updateAvailability(false);
-
-        log.info("좌석 예매 완료 {}", request.seatName());
-    }
-
     @Override
     public Long countAllSeats(Long screenId) {
         Screen screen = screenRepository.findById(screenId)
                 .orElseThrow(ScreenNotFoundException::new);
 
         return seatRepository.countAllSeatsByScreen(screen);
-    }
-
-    @Override
-    public Long countAvailableSeats(Long screenId) {
-        Screen screen = screenRepository.findById(screenId)
-                .orElseThrow(ScreenNotFoundException::new);
-
-        return seatRepository.countAvailableSeatsByScreen(screen);
     }
 }
