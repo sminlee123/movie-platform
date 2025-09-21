@@ -2,6 +2,7 @@ package com.example.movieplatform.ticket.domain;
 
 import com.example.movieplatform.screen.domain.Seat;
 import com.example.movieplatform.showinginfo.domain.ShowingInfo;
+import com.example.movieplatform.ticket.domain.request.TicketBuyRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,4 +28,9 @@ public class Ticket {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seat_id")
     private Seat seat;
+
+    public Ticket(ShowingInfo showingInfo, Seat seat) {
+        this.showingInfo = showingInfo;
+        this.seat = seat;
+    }
 }

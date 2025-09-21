@@ -1,8 +1,7 @@
 package com.example.movieplatform.ticket.service;
 
-import com.example.movieplatform.ticket.domain.request.TicketCheckRequest;
+import com.example.movieplatform.ticket.domain.request.TicketBuyRequest;
 
 public interface TicketService {
-    Long availableTicketCount(TicketCheckRequest request);
-    Long allTicketCount(TicketCheckRequest request);
+    void ticketBuy(TicketBuyRequest request);
 }
