@@ -5,6 +5,7 @@ import com.example.movieplatform.screen.domain.Seat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -12,4 +13,5 @@ public interface SeatRepository extends JpaRepository<Seat, Long>, CustomSeatRep
     Optional<Seat> findByNameAndScreen(String name, Screen screen);
     Long countAllSeatsByScreen(Screen screen);
     void deleteAllByScreen(Screen screen);
+    List<Seat> findByScreenAndIdIn(Screen screen, List<Long> seatIds);
 }

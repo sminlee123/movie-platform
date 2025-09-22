@@ -50,11 +50,14 @@
             <td th:text="${showing.bookSeatCount}">예매된 좌석</td>
             <td th:text="${showing.availableSeatCount}">남은 좌석</td>
             <td>
-                <form th:action="@{/admin/tickets}" method="post">
+                <form th:action="@{/reservations}" method="post" style="display: flex; gap: 5px; align-items: center;">
                     <input type="hidden" name="showingInfoId" th:value="${showing.id}">
-                    <label for="seatName">예매할 좌석 이름:</label>
-                        <input type="text" id="seatName" name="seatName" placeholder="예: A1" required>
-                    <button type="submit">예매</button>
+
+                    <label th:for="|seatIds-${showing.id}|" class="visually-hidden">좌석 ID</label>
+                    <input type="text" th:id="|seatIds-${showing.id}|" name="seatIds"
+                           placeholder="좌석 ID (쉼표로 구분)" required style="width: 150px;">
+
+                    <button type="submit">바로 예매</button>
                 </form>
             </td>
             <td>

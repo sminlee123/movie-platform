@@ -1,5 +1,6 @@
 package com.example.movieplatform.ticket.domain;
 
+import com.example.movieplatform.reservation.domain.Reservation;
 import com.example.movieplatform.screen.domain.Seat;
 import com.example.movieplatform.showinginfo.domain.ShowingInfo;
 import jakarta.persistence.*;
@@ -28,8 +29,17 @@ public class Ticket {
     @JoinColumn(name = "seat_id")
     private Seat seat;
 
-    public Ticket(ShowingInfo showingInfo, Seat seat) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
+
+    protected Ticket(ShowingInfo showingInfo, Seat seat, Reservation reservation) {
         this.showingInfo = showingInfo;
         this.seat = seat;
+        this.reservation = reservation;
+    }
+
+    public static Ticket create(ShowingInfo showingInfo, Seat seat, Reservation reservation) {
+        return new Ticket(showingInfo, seat, reservation);
     }
 }
