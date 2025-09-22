@@ -2,8 +2,6 @@ package com.example.movieplatform.ticket.domain;
 
 import com.example.movieplatform.screen.domain.Seat;
 import com.example.movieplatform.showinginfo.domain.ShowingInfo;
-import com.example.movieplatform.ticket.domain.request.TicketBuyRequest;
-import com.example.movieplatform.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,14 +28,8 @@ public class Ticket {
     @JoinColumn(name = "seat_id")
     private Seat seat;
 
-    // TODO 유저를 여기에 넣을가?
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    public Ticket(ShowingInfo showingInfo, Seat seat, User user) {
+    public Ticket(ShowingInfo showingInfo, Seat seat) {
         this.showingInfo = showingInfo;
         this.seat = seat;
-        this.user = user;
     }
 }

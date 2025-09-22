@@ -11,7 +11,6 @@ import com.example.movieplatform.ticket.domain.Ticket;
 import com.example.movieplatform.ticket.domain.request.TicketBuyRequest;
 import com.example.movieplatform.ticket.repository.TicketRepository;
 import com.example.movieplatform.ticket.service.TicketService;
-import com.example.movieplatform.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,7 @@ public class TicketServiceImpl implements TicketService {
     private final SeatRepository seatRepository;
 
     @Override
-    public void ticketBuy(TicketBuyRequest request, User user) {
+    public void ticketBuy(TicketBuyRequest request) {
         ShowingInfo showingInfo = showingInfoRepository.findById(request.showingInfoId())
                 .orElseThrow(ShowingInfoNotExistsException::new);
 
@@ -39,7 +38,7 @@ public class TicketServiceImpl implements TicketService {
             throw new SeatNotAvailableException();
         }
 
-        Ticket ticket = new Ticket(showingInfo, seat, user);
+        Ticket ticket = new Ticket(showingInfo, seat);
         ticketRepository.save(ticket);
         log.info("Ticket has been built : {}", ticket.getId());
     }
