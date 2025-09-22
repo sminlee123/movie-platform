@@ -11,7 +11,7 @@ import com.example.movieplatform.screen.exception.SeatNotFoundException;
 import com.example.movieplatform.screen.repository.SeatRepository;
 import com.example.movieplatform.showinginfo.domain.ShowingInfo;
 import com.example.movieplatform.showinginfo.exception.ShowingInfoNotExistsException;
-import com.example.movieplatform.showinginfo.repository.ShowingInfoRepository;
+import com.example.movieplatform.showinginfo.service.ShowingInfoService;
 import com.example.movieplatform.ticket.repository.TicketRepository;
 import com.example.movieplatform.ticket.service.TicketService;
 import com.example.movieplatform.user.domain.User;
@@ -31,19 +31,17 @@ import java.util.List;
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final ShowingInfoRepository showingInfoRepository;
     private final SeatRepository seatRepository;
     private final TicketRepository ticketRepository;
+    private final ShowingInfoService showingInfoService;
     private final TicketService ticketService;
 
     @Override
     public void createReservation(ReservationRequest request, User user) {
         log.info("Seat id {}", request.seatIds());
 
-
-        // 상영정보 존재 유무 체크
-        ShowingInfo showingInfo = showingInfoRepository.findById(request.showingInfoId())
-                .orElseThrow(ShowingInfoNotExistsException::new);
+        // 상영정보 검증 (존재 유무, 상영일자 체크)
+        ShowingInfo showingInfo = showingInfoService.validateShowingInfo(request.showingInfoId());
 
         // 좌석 존재 유무 체크
         List<Seat> seats = seatRepository.findByScreenAndIdIn(showingInfo.getScreen(), request.seatIds());

@@ -3,6 +3,7 @@ package com.example.movieplatform.showinginfo.service.impl;
 import com.example.movieplatform.movie.domain.Movie;
 import com.example.movieplatform.movie.exception.MovieNotExistsException;
 import com.example.movieplatform.movie.repository.MovieRepository;
+import com.example.movieplatform.reservation.exception.TimeAfterException;
 import com.example.movieplatform.screen.domain.Screen;
 import com.example.movieplatform.screen.exception.ScreenNotFoundException;
 import com.example.movieplatform.screen.repository.ScreenRepository;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -104,5 +106,20 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
         showingInfoRepository.delete(showingInfo);
         log.info("Delete ShowingInfo: {}", showingInfoId);
         return screenId;
+    }
+
+    @Override
+    public ShowingInfo validateShowingInfo(Long showingInfoId) {
+        ShowingInfo showinginfo = showingInfoRepository.findById(showingInfoId)
+                .orElseThrow(ShowingInfoNotExistsException::new);
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = LocalDateTime.of(showinginfo.getShowingDate(), showinginfo.getStartTime());
+
+        if(now.isAfter(startTime)) {
+            throw new TimeAfterException(); // TODO 이름 고민하기
+        }
+
+        return showinginfo;
     }
 }
