@@ -2,6 +2,7 @@ package com.example.movieplatform.reservation.service.impl;
 
 import com.example.movieplatform.reservation.domain.Reservation;
 import com.example.movieplatform.reservation.domain.request.ReservationRequest;
+import com.example.movieplatform.reservation.domain.response.ReservationResponse;
 import com.example.movieplatform.reservation.repository.ReservationRepository;
 import com.example.movieplatform.reservation.service.ReservationService;
 import com.example.movieplatform.screen.domain.Seat;
@@ -16,6 +17,8 @@ import com.example.movieplatform.ticket.service.TicketService;
 import com.example.movieplatform.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,5 +66,10 @@ public class ReservationServiceImpl implements ReservationService {
         ticketService.createAndAddTicketsToReservation(savedReservation, showingInfo, seats);
 
         log.info("Reservation has been created : {}", reservation);
+    }
+
+    @Override
+    public Page<ReservationResponse> getReservationsByUserId(Long userId, Pageable pageable) {
+        return reservationRepository.findAllReservationsByUserId(userId, pageable);
     }
 }

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>나의 예매 내역</title>
+    <style>
+        body { font-family: sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; }
+        .pagination { display: flex; justify-content: center; margin-top: 20px; }
+        .pagination a, .pagination span { margin: 0 5px; padding: 8px 16px; border: 1px solid #ddd; text-decoration: none; color: #007bff; }
+        .pagination .current { font-weight: bold; background-color: #007bff; color: white; border-color: #007bff; }
+        .pagination .disabled { color: #ccc; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<h1 th:text="|${userName}님의 예매 내역|">사용자 예매 내역</h1>
+
+<div th:if="${!reservations.empty}">
+    <table>
+        <thead>
+        <tr>
+            <th>예매 ID</th>
+            <th>최종 가격</th>
+            <th>예매 일시</th>
+            <th>상세 보기</th>
+            <th>취소</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="reservation : ${reservations.content}">
+            <td th:text="${reservation.id}">1</td>
+            <td th:text="${#numbers.formatInteger(reservation.totalPrice, 3, 'COMMA')} + '원'">15,000원</td>
+            <td th:text="${#temporals.format(reservation.reservationDate, 'yyyy-MM-dd HH:mm')}">2025-09-22 17:30</td>
+            <td>
+                <a href="#">상세 보기</a>
+            </td>
+            <td>
+                <a href="#">취소</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:if="${reservations.empty}">
+    <p>예매 내역이 없습니다.</p>
+</div>
+
+<div class="pagination" th:if="${reservations.totalPages > 1}">
+    <a th:href="@{/reservations(page=${reservations.number - 1})}"
+       th:classappend="${reservations.first} ? 'disabled'">이전</a>
+
+    <span th:each="pageNum : ${#numbers.sequence(0, reservations.totalPages - 1)}">
+        <a th:href="@{/reservations(page=${pageNum})}"
+           th:text="${pageNum + 1}"
+           th:classappend="${pageNum == reservations.number} ? 'current'"></a>
+    </span>
+
+    <a th:href="@{/reservations(page=${reservations.number + 1})}"
+       th:classappend="${reservations.last} ? 'disabled'">다음</a>
+</div>
+
+</body>
+</html>
