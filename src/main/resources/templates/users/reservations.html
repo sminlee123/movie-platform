@@ -25,6 +25,7 @@
             <th>예매 ID</th>
             <th>최종 가격</th>
             <th>예매 일시</th>
+            <th>예매 상태</th>
             <th>상세 보기</th>
             <th>취소</th>
         </tr>
@@ -34,6 +35,7 @@
             <td th:text="${reservation.id}">1</td>
             <td th:text="${#numbers.formatInteger(reservation.totalPrice, 3, 'COMMA')} + '원'">15,000원</td>
             <td th:text="${#temporals.format(reservation.reservationDate, 'yyyy-MM-dd HH:mm')}">2025-09-22 17:30</td>
+            <td th:text="${reservation.getStatusDescription()}"></td>
             <td>
                 <a href="#">상세 보기</a>
             </td>

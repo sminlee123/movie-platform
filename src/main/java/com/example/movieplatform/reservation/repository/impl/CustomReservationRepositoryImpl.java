@@ -24,7 +24,8 @@ public class CustomReservationRepositoryImpl implements CustomReservationReposit
                 .select(Projections.constructor(ReservationResponse.class,
                         reservation.id,
                         reservation.finalPrice,
-                        reservation.reservationDate
+                        reservation.reservationDate,
+                        reservation.status
                         ))
                 .from(reservation)
                 .where(reservation.user.id.eq(userId))
