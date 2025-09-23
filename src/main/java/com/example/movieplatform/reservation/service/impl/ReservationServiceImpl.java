@@ -2,7 +2,10 @@ package com.example.movieplatform.reservation.service.impl;
 
 import com.example.movieplatform.reservation.domain.Reservation;
 import com.example.movieplatform.reservation.domain.request.ReservationRequest;
+import com.example.movieplatform.reservation.domain.response.ReservationDetailResponse;
+import com.example.movieplatform.reservation.domain.response.ReservationInfoTuple;
 import com.example.movieplatform.reservation.domain.response.ReservationResponse;
+import com.example.movieplatform.reservation.exception.ReservationNotExistsException;
 import com.example.movieplatform.reservation.repository.ReservationRepository;
 import com.example.movieplatform.reservation.service.ReservationService;
 import com.example.movieplatform.screen.domain.Seat;
@@ -69,5 +72,27 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Page<ReservationResponse> getReservationsByUserId(Long userId, Pageable pageable) {
         return reservationRepository.findAllReservationsByUserId(userId, pageable);
+    }
+
+    @Override
+    public ReservationDetailResponse getReservationDetails(Long reservationId) {
+        ReservationInfoTuple info = reservationRepository.findReservationInfoById(reservationId)
+                .orElseThrow(ReservationNotExistsException::new);
+
+        List<String> seatNames = ticketRepository.findSeatNameByReservationId(reservationId);
+
+        return new ReservationDetailResponse(
+                info.reservationId(),
+                info.status().getDescription(),
+                info.reservationDate(),
+                info.finalPrice(),
+                info.movieTitle(),
+                info.posterUrl(),
+                info.screenName(),
+                info.showingDate(),
+                info.startTime(),
+                info.endTime(),
+                seatNames
+        );
     }
 }

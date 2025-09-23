@@ -37,7 +37,9 @@
             <td th:text="${#temporals.format(reservation.reservationDate, 'yyyy-MM-dd HH:mm')}">2025-09-22 17:30</td>
             <td th:text="${reservation.getStatusDescription()}"></td>
             <td>
-                <a href="#">상세 보기</a>
+                <form th:action="@{/reservations/{id}(id=${reservation.id})}" method="get">
+                    <button type="submit">상세 정보</button>
+                </form>
             </td>
             <td>
                 <a href="#">취소</a>

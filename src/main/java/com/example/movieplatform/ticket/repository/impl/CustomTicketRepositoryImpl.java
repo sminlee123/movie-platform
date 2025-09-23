@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.example.movieplatform.screen.domain.QSeat.seat;
 import static com.example.movieplatform.ticket.domain.QTicket.ticket;
 
 @RequiredArgsConstructor
@@ -31,5 +32,16 @@ public class CustomTicketRepositoryImpl implements CustomTicketRepository {
                         tuple -> tuple.get(ticket.showingInfo.id),
                         tuple -> tuple.get(ticket.count())
                 ));
+    }
+
+    @Override
+    public List<String> findSeatNameByReservationId(Long reservationId) {
+        return queryFactory
+                .select(seat.name)
+                .from(ticket)
+                .join(ticket.seat, seat)
+                .where(ticket.reservation.id.eq(reservationId))
+                .orderBy(seat.name.asc())
+                .fetch();
     }
 }

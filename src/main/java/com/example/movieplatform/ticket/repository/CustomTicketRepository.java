@@ -5,4 +5,5 @@ import java.util.Map;
 
 public interface CustomTicketRepository {
     Map<Long, Long> findBookedCountsByShowingInfoIds(List<Long> showingInfoIds);
+    List<String> findSeatNameByReservationId(Long reservationId);
 }

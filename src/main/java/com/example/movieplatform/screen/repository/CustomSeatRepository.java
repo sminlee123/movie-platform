@@ -8,5 +8,4 @@ import java.util.Map;
 @Repository
 public interface CustomSeatRepository {
     Map<Long, Long> findTotalCountsByScreenIds(List<Long> screenIds);
-
 }

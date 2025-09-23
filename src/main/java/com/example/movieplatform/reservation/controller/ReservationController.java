@@ -2,6 +2,7 @@ package com.example.movieplatform.reservation.controller;
 
 import com.example.movieplatform.auth.utils.AuthenticationUtil;
 import com.example.movieplatform.reservation.domain.request.ReservationRequest;
+import com.example.movieplatform.reservation.domain.response.ReservationDetailResponse;
 import com.example.movieplatform.reservation.domain.response.ReservationResponse;
 import com.example.movieplatform.reservation.service.ReservationService;
 import com.example.movieplatform.user.domain.User;
@@ -12,10 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Controller
@@ -42,4 +40,12 @@ public class ReservationController {
         reservationService.createReservation(request, user);
         return "redirect:/admin/screens";
     }
+
+    @GetMapping("/{id}")
+    public String showReservationDetail(@PathVariable Long id, Model model) {
+        ReservationDetailResponse detail = reservationService.getReservationDetails(id);
+        model.addAttribute("detail", detail);
+        return "users/reservationDetail";
+    }
+
 }
