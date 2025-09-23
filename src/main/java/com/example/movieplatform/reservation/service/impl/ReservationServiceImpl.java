@@ -95,4 +95,9 @@ public class ReservationServiceImpl implements ReservationService {
                 seatNames
         );
     }
+
+    @Override
+    public void deleteReservation(Long reservationId) {
+
+    }
 }

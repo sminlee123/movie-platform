@@ -48,4 +48,10 @@ public class ReservationController {
         return "users/reservationDetail";
     }
 
+    @DeleteMapping("/{id}")
+    public String deleteReservation(@PathVariable Long id) {
+        reservationService.deleteReservation(id);
+        return "redirect:/reservations";
+    }
+
 }

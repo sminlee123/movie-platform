@@ -42,7 +42,10 @@
                 </form>
             </td>
             <td>
-                <a href="#">취소</a>
+                <form th:action="@{/reservations/{id}(id=${reservation.id})}" method="post" style="display:inline;">
+                    <input type="hidden" name="_method" value="delete"/>
+                    <button type="submit" onclick="return confirm('정말 취소하시겠습니까?');">예매 취소</button>
+                </form>
             </td>
         </tr>
         </tbody>

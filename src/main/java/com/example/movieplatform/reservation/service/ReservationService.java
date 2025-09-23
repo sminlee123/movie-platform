@@ -11,4 +11,5 @@ public interface ReservationService {
     void createReservation(ReservationRequest request, User user);
     Page<ReservationResponse> getReservationsByUserId(Long userId, Pageable pageable);
     ReservationDetailResponse getReservationDetails(Long reservationId);
+    void deleteReservation(Long reservationId);
 }
