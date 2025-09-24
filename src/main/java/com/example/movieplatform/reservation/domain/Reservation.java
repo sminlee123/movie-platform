@@ -49,4 +49,8 @@ public class Reservation {
     public void prePersist() {
         this.reservationDate = LocalDateTime.now();
     }
+
+    public void changeStatus(ReservationStatus reservationStatus) {
+        this.status = reservationStatus;
+    }
 }

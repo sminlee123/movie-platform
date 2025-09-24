@@ -1,10 +1,12 @@
 package com.example.movieplatform.reservation.service.impl;
 
 import com.example.movieplatform.reservation.domain.Reservation;
+import com.example.movieplatform.reservation.domain.ReservationStatus;
 import com.example.movieplatform.reservation.domain.request.ReservationRequest;
 import com.example.movieplatform.reservation.domain.response.ReservationDetailResponse;
 import com.example.movieplatform.reservation.domain.response.ReservationInfoTuple;
 import com.example.movieplatform.reservation.domain.response.ReservationResponse;
+import com.example.movieplatform.reservation.exception.ReservationCancelException;
 import com.example.movieplatform.reservation.exception.ReservationNotExistsException;
 import com.example.movieplatform.reservation.repository.ReservationRepository;
 import com.example.movieplatform.reservation.service.ReservationService;
@@ -13,8 +15,9 @@ import com.example.movieplatform.screen.exception.SeatNotAvailableException;
 import com.example.movieplatform.screen.exception.SeatNotFoundException;
 import com.example.movieplatform.screen.repository.SeatRepository;
 import com.example.movieplatform.showinginfo.domain.ShowingInfo;
-import com.example.movieplatform.showinginfo.exception.ShowingInfoNotExistsException;
 import com.example.movieplatform.showinginfo.service.ShowingInfoService;
+import com.example.movieplatform.ticket.domain.Ticket;
+import com.example.movieplatform.ticket.exception.ReservationTicketNotExistsException;
 import com.example.movieplatform.ticket.repository.TicketRepository;
 import com.example.movieplatform.ticket.service.TicketService;
 import com.example.movieplatform.user.domain.User;
@@ -25,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -97,7 +101,31 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void deleteReservation(Long reservationId) {
+    public void cancelReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotExistsException::new);
+        cancelValidate(reservation);
+        reservation.changeStatus(ReservationStatus.CANCELLED);
 
+        log.info("Reservation has been cancelled : {}", reservation.getId());
+    }
+
+    private void cancelValidate(Reservation reservation) {
+        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
+            throw new ReservationCancelException();
+        }
+
+        Ticket ticket = ticketRepository.findFirstByReservation(reservation)
+                .orElseThrow(ReservationTicketNotExistsException::new);
+        ShowingInfo showingInfo = ticket.getShowingInfo();
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = LocalDateTime.of(showingInfo.getShowingDate(), showingInfo.getStartTime());
+        // 10분 전까지 취소 가능
+        LocalDateTime cancelAvailableTime = startTime.minusMinutes(10);
+
+        if (now.isAfter(cancelAvailableTime)) {
+            throw new ReservationCancelException();
+        }
     }
 }

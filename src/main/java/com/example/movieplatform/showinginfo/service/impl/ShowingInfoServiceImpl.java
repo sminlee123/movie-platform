@@ -77,7 +77,7 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
         List<ShowingInfoResponse> content = page.getContent();
 
         if (content.isEmpty()) {
-            return page; // 내용이 없으면 바로 반환
+            return page;
         }
 
         // 해당 스크린의 모든 좌석
@@ -115,8 +115,10 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = LocalDateTime.of(showinginfo.getShowingDate(), showinginfo.getStartTime());
+        // 30분 전까지 예매 가능
+        LocalDateTime reservationAvailableTime = startTime.minusMinutes(30);
 
-        if(now.isAfter(startTime)) {
+        if(now.isAfter(reservationAvailableTime)) {
             throw new TimeAfterException(); // TODO 이름 고민하기
         }
 
