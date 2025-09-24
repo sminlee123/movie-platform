@@ -60,7 +60,6 @@ public class AdminScreenController {
     public String screenCreate(@Valid @ModelAttribute ScreenCreateRequest request,
                                BindingResult bindingResult) {
         if(bindingResult.hasErrors()){
-            // TODO 어떻게 할까?
             return "admin/screenCreate";
         }
         Long screenId = screenService.createScreen(request);

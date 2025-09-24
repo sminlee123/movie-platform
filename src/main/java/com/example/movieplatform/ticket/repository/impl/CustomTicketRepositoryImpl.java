@@ -1,5 +1,6 @@
 package com.example.movieplatform.ticket.repository.impl;
 
+import com.example.movieplatform.reservation.domain.ReservationStatus;
 import com.example.movieplatform.ticket.repository.CustomTicketRepository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.example.movieplatform.reservation.domain.QReservation.reservation;
 import static com.example.movieplatform.screen.domain.QSeat.seat;
 import static com.example.movieplatform.ticket.domain.QTicket.ticket;
 
@@ -23,7 +25,9 @@ public class CustomTicketRepositoryImpl implements CustomTicketRepository {
         List<Tuple> tuples = queryFactory
                 .select(ticket.showingInfo.id, ticket.count())
                 .from(ticket)
-                .where(ticket.showingInfo.id.in(showingInfoIds))
+                .join(ticket.reservation, reservation)
+                .where(ticket.showingInfo.id.in(showingInfoIds),
+                        reservation.status.ne(ReservationStatus.CANCELLED)) // TODO 일단 취소 아닌거는 다 카운팅
                 .groupBy(ticket.showingInfo.id)
                 .fetch();
 
