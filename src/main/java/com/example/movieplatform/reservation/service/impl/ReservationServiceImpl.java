@@ -58,7 +58,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // 예매 유무 체크
-        if (ticketRepository.existsByShowingInfoAndSeatIn(showingInfo, seats)) {
+        if (ticketRepository.validateTicketForReservation(showingInfo, seats)) {
             throw new SeatNotAvailableException();
         }
 
@@ -74,11 +74,13 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ReservationResponse> getReservationsByUserId(Long userId, Pageable pageable) {
         return reservationRepository.findAllReservationsByUserId(userId, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ReservationDetailResponse getReservationDetails(Long reservationId) {
         ReservationInfoTuple info = reservationRepository.findReservationInfoById(reservationId)
                 .orElseThrow(ReservationNotExistsException::new);
