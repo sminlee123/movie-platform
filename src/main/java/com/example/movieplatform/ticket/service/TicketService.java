@@ -1,8 +1,11 @@
 package com.example.movieplatform.ticket.service;
 
-import com.example.movieplatform.ticket.domain.request.TicketBuyRequest;
-import com.example.movieplatform.user.domain.User;
+import com.example.movieplatform.reservation.domain.Reservation;
+import com.example.movieplatform.screen.domain.Seat;
+import com.example.movieplatform.showinginfo.domain.ShowingInfo;
+
+import java.util.List;
 
 public interface TicketService {
-    void ticketBuy(TicketBuyRequest request, User user);
+    void createAndAddTicketsToReservation(Reservation reservation, ShowingInfo showingInfo, List<Seat> seats);
 }

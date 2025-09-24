@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>예약 상세 정보</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        img {
+            max-width: 100px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<h1 th:text="${detail.reservationId} + ' 예약 정보'"></h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>예매 영화</th>
+        <th>포스터</th>
+        <th>예약일</th>
+        <th>상영관</th>
+        <th>예약 좌석</th>
+        <th>상영일</th>
+        <th>시작 시간</th>
+        <th>끝나는 시간</th>
+        <th>예매 가격</th>
+        <th>예매 상태</th>
+    </tr>
+    </thead>
+    <tbody>
+        <td th:text="${detail.movieTitle}"></td>
+        <td>
+            <img th:src="${detail.posterUrl}" th:alt="${detail.movieTitle} + ' 포스터'" width="100">
+        </td>
+        <td th:text="${detail.reservationDate}"></td>
+        <td th:text="${detail.screenName}"></td>
+        <td th:text="${detail.seatNames}"></td>
+        <td th:text="${detail.showingDate}"></td>
+        <td th:text="${detail.startTime}"></td>
+        <td th:text="${detail.endTime}"></td>
+        <td th:text="${detail.finalPrice}"></td>
+        <td th:text="${detail.reservationStatus}"></td>
+    </tbody>
+</table>
+
+<form th:action="@{/reservations}">
+    <button type="submit">뒤로</button>
+</form>
+
+</body>
+</html>

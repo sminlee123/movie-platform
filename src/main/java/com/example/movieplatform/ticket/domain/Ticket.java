@@ -1,9 +1,8 @@
 package com.example.movieplatform.ticket.domain;
 
+import com.example.movieplatform.reservation.domain.Reservation;
 import com.example.movieplatform.screen.domain.Seat;
 import com.example.movieplatform.showinginfo.domain.ShowingInfo;
-import com.example.movieplatform.ticket.domain.request.TicketBuyRequest;
-import com.example.movieplatform.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,9 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "tickets",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"showing_info_id", "seat_id"})
-)
+@Table(name = "tickets")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Ticket {
@@ -30,14 +27,17 @@ public class Ticket {
     @JoinColumn(name = "seat_id")
     private Seat seat;
 
-    // TODO 유저를 여기에 넣을가?
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
 
-    public Ticket(ShowingInfo showingInfo, Seat seat, User user) {
+    protected Ticket(ShowingInfo showingInfo, Seat seat, Reservation reservation) {
         this.showingInfo = showingInfo;
         this.seat = seat;
-        this.user = user;
+        this.reservation = reservation;
+    }
+
+    public static Ticket create(ShowingInfo showingInfo, Seat seat, Reservation reservation) {
+        return new Ticket(showingInfo, seat, reservation);
     }
 }
