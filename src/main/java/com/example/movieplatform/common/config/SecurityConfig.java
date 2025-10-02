@@ -33,10 +33,15 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**", "/users").permitAll()
                         .requestMatchers("/admin/**").permitAll()
                         .requestMatchers("/api/movies/search").permitAll()
+                        .requestMatchers("/movies/**").permitAll()
+                        .requestMatchers("/api/user/me").authenticated()
+
+                        .requestMatchers("/api/signup").permitAll() // 회원가입 열어놓음
+                        .requestMatchers("/api/mypage/**").authenticated()
+                        .requestMatchers("/api/reservations/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")  // 커스텀 로그인 폼 경로 지정
                         .loginProcessingUrl("/login") // 로그인 처리
                         .usernameParameter("email")
                         .successHandler(customLoginSuccessHandler)
@@ -57,11 +62,11 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> {
                     // 인가(Authorization) 실패 시 (권한 없는 경우)
                     exception.accessDeniedHandler((request, response, accessDeniedException) -> {
-                        response.sendRedirect("/");
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     });
                     // 인증(Authentication) 실패 시 (로그인 안 한 경우)
                     exception.authenticationEntryPoint((request, response, authException) -> {
-                        response.sendRedirect("/login");
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     });
                 });
 

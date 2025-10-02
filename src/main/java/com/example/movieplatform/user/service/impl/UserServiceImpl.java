@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
     public void updateUser(User user, UserUpdateRequest request) {
         validateBirthDay(request.birthDay());
 
-        user.changeUserName(request.userName());
+        user.changeUserName(request.name());
         user.changePhoneNumber(request.phoneNumber());
         user.changeBirthDay(request.birthDay());
     }

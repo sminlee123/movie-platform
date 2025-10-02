@@ -1,63 +1,76 @@
 package com.example.movieplatform.user.controller;
 
 import com.example.movieplatform.auth.utils.AuthenticationUtil;
+import com.example.movieplatform.reservation.domain.response.ReservationResponse;
+import com.example.movieplatform.reservation.service.ReservationService;
 import com.example.movieplatform.user.domain.User;
 import com.example.movieplatform.user.domain.request.UserUpdateRequest;
+import com.example.movieplatform.user.domain.response.UserDetailResponse;
 import com.example.movieplatform.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/mypage")
+@Slf4j
+@RestController
+@RequestMapping("/api/mypage")
 @RequiredArgsConstructor
 public class MypageController {
 
     private final AuthenticationUtil authenticationUtil;
+    private final ReservationService reservationService;
     private final UserService userService;
 
-    // 마이페이지
     @GetMapping
-    public String getMyPage(Model model) {
-        return "users/mypage";
+    public ResponseEntity<Void> getMyPage() {
+        return ResponseEntity.ok().build();
     }
 
-    // 내 정보
     @GetMapping("/me")
-    public String getMyInfo(Model model) {
-        User user = authenticationUtil.getCurrentUser();
-        model.addAttribute("user", user);
-        return "users/userinfo";
+    public ResponseEntity<UserDetailResponse> getMyInfo() {
+        User currentUser = authenticationUtil.getCurrentUser();
+        UserDetailResponse userDetailResponse = new UserDetailResponse(
+                currentUser.getUserName(),
+                currentUser.getEmail(),
+                currentUser.getPhoneNumber(),
+                currentUser.getBirthDay()
+        );
+
+        log.info(userDetailResponse.toString());
+        return ResponseEntity.ok(userDetailResponse);
     }
 
-    // 수정 폼
-    @GetMapping("/edit")
-    public String showEditForm(Model model) {
+    @GetMapping("/reservations")
+    public ResponseEntity<Page<ReservationResponse>> showReservations(@PageableDefault(size = 10, page = 0) Pageable pageable) {
         User user = authenticationUtil.getCurrentUser();
-
-        UserUpdateRequest request = new UserUpdateRequest(
-                user.getUserName(),
-                user.getPhoneNumber(),
-                user.getBirthDay()
-        );
-        model.addAttribute("request", request);
-        return "users/editForm";
+        Page<ReservationResponse> reservations = reservationService.getReservationsByUserId(user.getId(), pageable);
+        return ResponseEntity.ok(reservations);
     }
 
     // 수정
-    @PostMapping("/edit")
-    public String edit(@ModelAttribute UserUpdateRequest request) {
+    @PutMapping
+    public ResponseEntity<Void> edit(@Valid @RequestBody UserUpdateRequest request,
+                                     BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+
+        }
+        log.info(request.toString());
         User user = authenticationUtil.getCurrentUser();
         userService.updateUser(user, request);
-        return "redirect:/mypage/me";
+        return ResponseEntity.ok().build();
     }
 
     // 탈퇴
     @DeleteMapping
-    public String deleteMyInfo() {
+    public ResponseEntity<Void> deleteMyInfo() {
         User user = authenticationUtil.getCurrentUser();
         userService.deleteUser(user);
-        return "redirect:/logout";
+        return ResponseEntity.noContent().build();
     }
 }

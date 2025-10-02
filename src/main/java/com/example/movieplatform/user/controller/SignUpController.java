@@ -4,16 +4,13 @@ import com.example.movieplatform.user.domain.request.UserCreateRequest;
 import com.example.movieplatform.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@Controller
-@RequestMapping("/signup")
+@RestController
+@RequestMapping("/api/signup")
 @RequiredArgsConstructor
 public class SignUpController {
 
@@ -28,10 +25,10 @@ public class SignUpController {
     }
 
     @PostMapping
-    public String registerUser(@ModelAttribute  UserCreateRequest request) {
+    public ResponseEntity<Void> registerUser(@RequestBody UserCreateRequest request) {
         // TODO 비밀번호 2번 받아서 검증하는건 어떻게 할까
         userService.createUser(request);
         log.info("User created successfully {}", request.username());
-        return "redirect:/login";
+        return ResponseEntity.ok().build();
     }
 }
