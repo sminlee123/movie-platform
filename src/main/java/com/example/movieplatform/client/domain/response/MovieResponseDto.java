@@ -1,5 +1,7 @@
 package com.example.movieplatform.client.domain.response;
 
+import java.time.LocalDate;
+
 public record MovieResponseDto(
         String docid,
         String title,
@@ -9,7 +11,7 @@ public record MovieResponseDto(
         String plot,
         String posterUrl,
         String ratingGrade,
-        String releaseDate,
+        LocalDate releaseDate,
         String runtime,
         String genre
 ) {

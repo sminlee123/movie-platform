@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +32,7 @@ public class MovieController {
     @GetMapping("/{id}")
     public ResponseEntity<MovieDetailResponse> getMovieDetail(@PathVariable Long id) {
         MovieDetailResponse detail = movieService.getMovieDetailById(id);
+        log.info(detail.genres().toString());
         return ResponseEntity.ok(detail);
     }
 }

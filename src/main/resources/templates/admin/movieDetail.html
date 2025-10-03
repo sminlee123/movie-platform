@@ -13,7 +13,7 @@
 <p><strong>등급:</strong> <span th:text="${movieDetail.ratingGrade}">등급</span></p>
 <p><strong>개봉일:</strong> <span th:text="${movieDetail.releaseDate}">개봉일</span></p>
 <p><strong>상영시간:</strong> <span th:text="${movieDetail.runtime}">상영시간</span></p>
-<p><strong>장르:</strong> <span th:text="${movieDetail.genre}">장르</span></p>
+<p><strong>장르:</strong> <span th:text="${movieDetail.genres}">장르</span></p>
 <img th:src="@{${movieDetail.posterUrl}}" alt="영화 포스터" style="width:300px; height:auto;"/>
 <p><strong>영화 아이디:</strong> <span th:text="${movieDetail.docid}">아이디</span></p>
 </body>
