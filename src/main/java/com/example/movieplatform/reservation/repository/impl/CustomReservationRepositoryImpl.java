@@ -1,6 +1,6 @@
 package com.example.movieplatform.reservation.repository.impl;
 
-import com.example.movieplatform.reservation.domain.response.ReservationDetailResponse;
+import com.example.movieplatform.reservation.domain.Reservation;
 import com.example.movieplatform.reservation.domain.response.ReservationInfoTuple;
 import com.example.movieplatform.reservation.domain.response.ReservationResponse;
 import com.example.movieplatform.reservation.repository.CustomReservationRepository;
@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.movieplatform.movie.domain.QMovie.movie;
 import static com.example.movieplatform.reservation.domain.QReservation.reservation;
@@ -27,14 +28,8 @@ public class CustomReservationRepositoryImpl implements CustomReservationReposit
 
     @Override
     public Page<ReservationResponse> findAllReservationsByUserId(Long userId, Pageable pageable) {
-        List<ReservationResponse> content = queryFactory
-                .select(Projections.constructor(ReservationResponse.class,
-                        reservation.id,
-                        reservation.finalPrice,
-                        reservation.reservationDate,
-                        reservation.status
-                        ))
-                .from(reservation)
+        List<Reservation> reservations = queryFactory
+                .selectFrom(reservation)
                 .where(reservation.user.id.eq(userId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -46,6 +41,10 @@ public class CustomReservationRepositoryImpl implements CustomReservationReposit
                 .from(reservation)
                 .where(reservation.user.id.eq(userId))
                 .fetchOne();
+
+        List<ReservationResponse> content = reservations.stream()
+                .map(ReservationResponse::from)
+                .collect(Collectors.toList());
 
         return new PageImpl<>(content, pageable, total != null ? total : 0);
     }

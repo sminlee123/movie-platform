@@ -13,6 +13,6 @@ public record MovieDetailResponse (
         String ratingGrade,
         String releaseDate,
         String runtime,
-        List<String> genre
+        List<String> genres
 ) {
 }

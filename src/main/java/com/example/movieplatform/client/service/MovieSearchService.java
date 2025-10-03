@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,12 +72,15 @@ public class MovieSearchService {
         }
 
         String ratingGrade = "";
-        String releaseDate = "";
+        LocalDate releaseDate = null;
         String runtime = "";
         if (movieResult.ratings() != null && movieResult.ratings().rating() != null && !movieResult.ratings().rating().isEmpty()) {
             MovieApiResponse.Rating ratings = movieResult.ratings().rating().get(0);
             ratingGrade = ratings.ratingGrade();
-            releaseDate = ratings.releaseDate();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+            releaseDate =  LocalDate.parse(ratings.releaseDate(), formatter);
             runtime = ratings.runtime();
         }
         return new MovieResponseDto(

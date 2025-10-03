@@ -77,7 +77,7 @@ public class CustomMovieRepositoryImpl implements CustomMovieRepository {
                 movie.getPlot(),
                 movie.getPosterUrl(),
                 movie.getGrade(),
-                movie.getReleaseDate(),
+                movie.getReleaseDate().toString(),
                 movie.getRuntime(),
                 genreNames
         );

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class Movie {
 
     // 제작년도
     @Column(nullable = false, name = "release_date")
-    String releaseDate;
+    LocalDate releaseDate;
 
     @Column(nullable = false)
     String runtime;
