@@ -3,7 +3,6 @@ package com.example.movieplatform.user.service.impl;
 import com.example.movieplatform.user.domain.User;
 import com.example.movieplatform.user.domain.request.UserCreateRequest;
 import com.example.movieplatform.user.domain.request.UserUpdateRequest;
-import com.example.movieplatform.user.exception.NotValidBirthDayException;
 import com.example.movieplatform.user.exception.UserAlreadyExistsException;
 import com.example.movieplatform.user.exception.UserNotFoundException;
 import com.example.movieplatform.user.respository.UserRepository;
@@ -13,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
 
 @Slf4j
 @Service

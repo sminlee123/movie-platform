@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/signup").permitAll() // 회원가입 열어놓음
                         .requestMatchers("/api/mypage/**").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
+                        .requestMatchers("/api/movies/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
