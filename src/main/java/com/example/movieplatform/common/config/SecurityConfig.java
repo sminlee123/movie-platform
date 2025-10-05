@@ -32,7 +32,6 @@ public class SecurityConfig {
                         .requestMatchers("/signup").permitAll()
                         .requestMatchers("/auth/**", "/users").permitAll()
                         .requestMatchers("/admin/**").permitAll()
-                        .requestMatchers("/api/movies/search").permitAll()
                         .requestMatchers("/movies/**").permitAll()
                         .requestMatchers("/api/user/me").authenticated()
 
@@ -40,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/mypage/**").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
                         .requestMatchers("/api/movies/**").permitAll()
+                        .requestMatchers("/api/showing/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

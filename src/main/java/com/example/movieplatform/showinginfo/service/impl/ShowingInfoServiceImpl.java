@@ -99,6 +99,11 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
     }
 
     @Override
+    public List<ShowingInfoResponse> getShowingInfosByMovieId(Long movieId) {
+        return showingInfoRepository.findShowingsByMovieId(movieId);
+    }
+
+    @Override
     public Long deleteShowingInfo(Long showingInfoId) {
         ShowingInfo showingInfo = showingInfoRepository.findById(showingInfoId)
                 .orElseThrow(ShowingInfoNotExistsException::new);

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,5 +71,33 @@ public class CustomShowingInfoRepositoryImpl implements CustomShowingInfoReposit
                 .fetchOne();
 
         return new PageImpl<>(content, pageable, total != null ? total : 0);
+    }
+
+    @Override
+    public List<ShowingInfoResponse> findShowingsByMovieId(Long movieId) {
+        // 현재부터 +3일까지 상영정보만 가져옴
+
+        LocalDate today = LocalDate.now();
+        LocalDate threeDaysLater = today.plusDays(3);
+
+        return queryFactory
+                .select(Projections.constructor(ShowingInfoResponse.class,
+                        showingInfo.id,
+                        movie.title,
+                        screen.name,
+                        showingInfo.showingDate,
+                        showingInfo.startTime,
+                        showingInfo.endTime,
+                        showingInfo.price
+                ))
+                .from(showingInfo)
+                .join(showingInfo.movie, movie)
+                .join(showingInfo.screen, screen)
+                .where(
+                        showingInfo.movie.id.eq(movieId),
+                        showingInfo.showingDate.between(today, threeDaysLater)
+                )
+                .orderBy(showingInfo.id.desc())
+                .fetch();
     }
 }
