@@ -71,7 +71,6 @@ public class SecurityConfig {
                     });
                 });
 
-
         http.addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

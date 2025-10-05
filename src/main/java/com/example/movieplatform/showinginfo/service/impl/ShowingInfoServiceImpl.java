@@ -54,9 +54,9 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
         Screen screen = screenRepository.findById(request.screenId())
                 .orElseThrow(ScreenNotFoundException::new);
 
-        if (showingInfoRepository.existsByScreenAndShowingDate(screen, request.showingDate())) {
-            throw new ShowingInfoAlreadyExistsException();
-        }
+//        if (showingInfoRepository.existsByScreenAndShowingDate(screen, request.showingDate())) {
+//            throw new ShowingInfoAlreadyExistsException();
+//        }
 
         long runtime = Long.parseLong(movie.getRuntime());
         LocalTime startTime = request.startTime();
@@ -100,6 +100,7 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
 
     @Override
     public List<ShowingInfoResponse> getShowingInfosByMovieId(Long movieId) {
+        List<ShowingInfoResponse> info = showingInfoRepository.findShowingsByMovieId(movieId);
         return showingInfoRepository.findShowingsByMovieId(movieId);
     }
 

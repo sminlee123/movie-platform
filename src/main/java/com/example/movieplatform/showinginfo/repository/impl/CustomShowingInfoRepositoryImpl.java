@@ -76,7 +76,6 @@ public class CustomShowingInfoRepositoryImpl implements CustomShowingInfoReposit
     @Override
     public List<ShowingInfoResponse> findShowingsByMovieId(Long movieId) {
         // 현재부터 +3일까지 상영정보만 가져옴
-
         LocalDate today = LocalDate.now();
         LocalDate threeDaysLater = today.plusDays(3);
 
@@ -97,7 +96,10 @@ public class CustomShowingInfoRepositoryImpl implements CustomShowingInfoReposit
                         showingInfo.movie.id.eq(movieId),
                         showingInfo.showingDate.between(today, threeDaysLater)
                 )
-                .orderBy(showingInfo.id.desc())
+                .orderBy(
+                        showingInfo.showingDate.asc(),
+                        showingInfo.startTime.asc()
+                )
                 .fetch();
     }
 }
