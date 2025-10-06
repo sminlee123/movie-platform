@@ -19,12 +19,19 @@ public class Seat {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "row_num", nullable = false)
+    private int rowNumber;
+    @Column(name = "col_num", nullable = false)
+    private int colNumber;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "screen_id")
     private Screen screen;
 
-    public Seat(String name, Screen screen) {
+    public Seat(String name, Screen screen, int rowNumber, int colNumber) {
         this.name = name;
         this.screen = screen;
+        this.rowNumber = rowNumber;
+        this.colNumber = colNumber;
     }
 }

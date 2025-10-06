@@ -44,7 +44,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final TicketService ticketService;
 
     @Override
-    public void createReservation(ReservationRequest request, User user) {
+    public ReservationDetailResponse createReservation(ReservationRequest request, User user) {
         log.info("Seat id {}", request.seatIds());
 
         // 상영정보 검증 (존재 유무, 상영일자 체크)
@@ -71,6 +71,25 @@ public class ReservationServiceImpl implements ReservationService {
         ticketService.createAndAddTicketsToReservation(savedReservation, showingInfo, seats);
 
         log.info("Reservation has been created : {}", reservation);
+
+        ReservationInfoTuple info = reservationRepository.findReservationInfoById(savedReservation.getId())
+                .orElseThrow(ReservationNotExistsException::new);
+
+        List<String> seatNames = ticketRepository.findSeatNameByReservationId(savedReservation.getId());
+
+        return new ReservationDetailResponse(
+                info.reservationId(),
+                info.status().getDescription(),
+                info.reservationDate(),
+                info.finalPrice(),
+                info.movieTitle(),
+                info.posterUrl(),
+                info.screenName(),
+                info.showingDate(),
+                info.startTime(),
+                info.endTime(),
+                seatNames
+        );
     }
 
     @Override

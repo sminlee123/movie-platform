@@ -2,7 +2,6 @@ package com.example.movieplatform.screen.service.impl;
 
 import com.example.movieplatform.screen.domain.Screen;
 import com.example.movieplatform.screen.domain.Seat;
-import com.example.movieplatform.screen.domain.request.SeatGenerateRequest;
 import com.example.movieplatform.screen.exception.ScreenNotFoundException;
 import com.example.movieplatform.screen.repository.ScreenRepository;
 import com.example.movieplatform.screen.repository.SeatRepository;
@@ -25,26 +24,6 @@ public class SeatServiceImpl implements SeatService {
     private final SeatRepository seatRepository;
 
     @Override
-    public void generateSeats(SeatGenerateRequest request) {
-        Screen screen = screenRepository.findById(request.screenId())
-                .orElseThrow(ScreenNotFoundException::new);
-
-        // 좌석 리스트
-        List<Seat> seats = new ArrayList<Seat>();
-
-        // 좌석 생성
-        for(int i = 0; i < request.rows(); i++) {
-            char rowChar = (char) ('A' + i);
-            for(int j = 1; j <= request.cols(); j++) {
-                String seatName = rowChar + String.valueOf(j);
-                Seat seat = new Seat(seatName, screen);
-                seats.add(seat);
-            }
-        }
-        seatRepository.saveAll(seats);
-    }
-
-    @Override
     public void generateSeats(Long screenId, int rows, int cols) {
         Screen screen = screenRepository.findById(screenId)
                 .orElseThrow(ScreenNotFoundException::new);
@@ -57,7 +36,7 @@ public class SeatServiceImpl implements SeatService {
             char rowChar = (char) ('A' + i);
             for(int j = 1; j <= cols; j++) {
                 String seatName = rowChar + String.valueOf(j);
-                Seat seat = new Seat(seatName, screen);
+                Seat seat = new Seat(seatName, screen, i, j);
                 seats.add(seat);
             }
         }

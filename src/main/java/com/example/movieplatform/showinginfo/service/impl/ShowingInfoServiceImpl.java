@@ -11,6 +11,7 @@ import com.example.movieplatform.screen.service.SeatService;
 import com.example.movieplatform.showinginfo.domain.ShowingInfo;
 import com.example.movieplatform.showinginfo.domain.request.ShowingInfoCreateRequest;
 import com.example.movieplatform.showinginfo.domain.response.ShowingInfoResponse;
+import com.example.movieplatform.showinginfo.domain.response.ShowingSeatsResponse;
 import com.example.movieplatform.showinginfo.exception.ShowingDateException;
 import com.example.movieplatform.showinginfo.exception.ShowingInfoAlreadyExistsException;
 import com.example.movieplatform.showinginfo.exception.ShowingInfoNotExistsException;
@@ -100,8 +101,28 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
 
     @Override
     public List<ShowingInfoResponse> getShowingInfosByMovieId(Long movieId) {
+        Movie movie = movieRepository.findByid(movieId)
+                .orElseThrow(MovieNotExistsException::new);
+
         List<ShowingInfoResponse> info = showingInfoRepository.findShowingsByMovieId(movieId);
-        return showingInfoRepository.findShowingsByMovieId(movieId);
+        List<Long> showingInfoIds = info.stream()
+                .map(ShowingInfoResponse::getId)
+                .toList();
+
+        // 상영정보별 전체 좌석
+        Map<Long, Long> allSeatByShowingInfoId = showingInfoRepository.findTotalCountsByShowingInfoIds(showingInfoIds);
+
+        // 예약된 좌석
+        Map<Long, Long> bookedCountsMap = ticketRepository.findBookedCountsByShowingInfoIds(showingInfoIds);
+
+        for (ShowingInfoResponse dto : info) {
+            Long showingId = dto.getId();
+            long totalSeats = allSeatByShowingInfoId.getOrDefault(showingId, 0L);
+            long bookedSeats = bookedCountsMap.getOrDefault(showingId, 0L);
+            dto.setSeatCounts(totalSeats, bookedSeats);
+        }
+
+        return info;
     }
 
     @Override
@@ -129,5 +150,11 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
         }
 
         return showinginfo;
+    }
+
+    @Override
+    public ShowingSeatsResponse getShowingSeats(Long showingInfoId) {
+        return showingInfoRepository.findShowingSeatsByShowingInfoId(showingInfoId)
+                .orElseThrow(ShowingInfoNotExistsException::new);
     }
 }

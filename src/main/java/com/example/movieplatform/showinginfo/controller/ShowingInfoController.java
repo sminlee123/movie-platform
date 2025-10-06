@@ -1,6 +1,7 @@
 package com.example.movieplatform.showinginfo.controller;
 
 import com.example.movieplatform.showinginfo.domain.response.ShowingInfoResponse;
+import com.example.movieplatform.showinginfo.domain.response.ShowingSeatsResponse;
 import com.example.movieplatform.showinginfo.service.ShowingInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,5 +26,12 @@ public class ShowingInfoController {
             (@PathVariable Long movieId) {
         List<ShowingInfoResponse> showingInfos =  showingInfoService.getShowingInfosByMovieId(movieId);
         return ResponseEntity.ok(showingInfos);
+    }
+
+    @GetMapping("/{showingInfoId}/seats")
+    public ResponseEntity<ShowingSeatsResponse> getShowingSeats
+            (@PathVariable Long showingInfoId) {
+        ShowingSeatsResponse seatsResponse = showingInfoService.getShowingSeats(showingInfoId);
+        return ResponseEntity.ok(seatsResponse);
     }
 }

@@ -1,12 +1,8 @@
 package com.example.movieplatform.screen.controller;
 
-import com.example.movieplatform.screen.domain.request.SeatDeleteRequest;
-import com.example.movieplatform.screen.domain.request.SeatGenerateRequest;
 import com.example.movieplatform.screen.service.SeatService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j

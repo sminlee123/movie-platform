@@ -63,8 +63,6 @@ public class AdminScreenController {
             return "admin/screenCreate";
         }
         Long screenId = screenService.createScreen(request);
-        seatService.generateSeats(screenId, request.rows(), request.cols());
-
         return "redirect:/admin/screens";
     }
 
