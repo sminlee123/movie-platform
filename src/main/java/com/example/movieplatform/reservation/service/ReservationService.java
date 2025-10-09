@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ReservationService {
-    void createReservation(ReservationRequest request, User user);
+    ReservationDetailResponse createReservation(ReservationRequest request, User user);
     Page<ReservationResponse> getReservationsByUserId(Long userId, Pageable pageable);
     ReservationDetailResponse getReservationDetails(Long reservationId);
     void cancelReservation(Long reservationId);

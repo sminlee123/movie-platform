@@ -47,7 +47,7 @@ public class MypageController {
     }
 
     @GetMapping("/reservations")
-    public ResponseEntity<Page<ReservationResponse>> showReservations(@PageableDefault(size = 10, page = 0) Pageable pageable) {
+    public ResponseEntity<Page<ReservationResponse>> showReservations(@PageableDefault(size = 10, page = 1) Pageable pageable) {
         User user = authenticationUtil.getCurrentUser();
         Page<ReservationResponse> reservations = reservationService.getReservationsByUserId(user.getId(), pageable);
         return ResponseEntity.ok(reservations);

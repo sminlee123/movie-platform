@@ -32,14 +32,16 @@ public class SecurityConfig {
                         .requestMatchers("/signup").permitAll()
                         .requestMatchers("/auth/**", "/users").permitAll()
                         .requestMatchers("/admin/**").permitAll()
-                        .requestMatchers("/api/movies/search").permitAll()
                         .requestMatchers("/movies/**").permitAll()
                         .requestMatchers("/api/user/me").authenticated()
 
-                        .requestMatchers("/api/signup").permitAll() // 회원가입 열어놓음
+                        .requestMatchers("/api/signup").permitAll()
                         .requestMatchers("/api/mypage/**").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
                         .requestMatchers("/api/movies/**").permitAll()
+                        .requestMatchers("/api/showing/**").authenticated()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/movie-search").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -64,13 +66,18 @@ public class SecurityConfig {
                     // 인가(Authorization) 실패 시 (권한 없는 경우)
                     exception.accessDeniedHandler((request, response, accessDeniedException) -> {
                         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.setContentType("text/plain;charset=UTF-8");
+                        response.setCharacterEncoding("UTF-8");
+                        response.getWriter().write("관리자 권한이 필요한 페이지입니다.");
                     });
                     // 인증(Authentication) 실패 시 (로그인 안 한 경우)
                     exception.authenticationEntryPoint((request, response, authException) -> {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("text/plain;charset=UTF-8");
+                        response.setCharacterEncoding("UTF-8");
+                        response.getWriter().write("인증이 필요한 페이지입니다.");
                     });
                 });
-
 
         http.addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class);
 

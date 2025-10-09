@@ -8,6 +8,7 @@ import com.example.movieplatform.screen.exception.ScreenNotFoundException;
 import com.example.movieplatform.screen.repository.ScreenRepository;
 import com.example.movieplatform.screen.repository.SeatRepository;
 import com.example.movieplatform.screen.service.ScreenService;
+import com.example.movieplatform.screen.service.SeatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ public class ScreenServiceImpl implements ScreenService {
 
     private final ScreenRepository screenRepository;
     private final SeatRepository seatRepository;
+    private final SeatService seatService;
 
     @Override
     public Long createScreen(ScreenCreateRequest request) {
@@ -34,6 +36,7 @@ public class ScreenServiceImpl implements ScreenService {
         Screen screen = new Screen(request.name());
         Screen savedScreen = screenRepository.save(screen);
         log.info("Created Screen with name {}", screen.getName());
+        seatService.generateSeats(savedScreen.getId(), request.rows(), request.cols());
         return savedScreen.getId();
     }
 

@@ -4,27 +4,28 @@ import com.example.movieplatform.showinginfo.domain.request.ShowingInfoCreateReq
 import com.example.movieplatform.showinginfo.service.ShowingInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@Controller
-@RequestMapping("/admin/showings")
+@RestController
+@RequestMapping("/api/admin/showings")
 @RequiredArgsConstructor
 public class AdminShowingInfoController {
 
     private final ShowingInfoService showingInfoService;
 
     @PostMapping
-    public String createShowingInfo(@ModelAttribute ShowingInfoCreateRequest request, Model model) {
-        Long screenId = showingInfoService.createShowingInfo(request);
-        return "redirect:/admin/screens/" + screenId;
+    public ResponseEntity<Void> createShowingInfo(@RequestBody ShowingInfoCreateRequest request) {
+        showingInfoService.createShowingInfo(request);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public String deleteShowingInfo(@PathVariable Long id) {
+    public ResponseEntity<Long> deleteShowingInfo(@PathVariable Long id) {
         Long screenId = showingInfoService.deleteShowingInfo(id);
-        return "redirect:/admin/screens/" + screenId;
+        return ResponseEntity.ok(screenId);
     }
 }

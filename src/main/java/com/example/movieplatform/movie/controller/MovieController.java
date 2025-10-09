@@ -24,7 +24,8 @@ public class MovieController {
 
     @GetMapping
     public ResponseEntity<Page<SimpleMovieResponse>> allMovies(
-            @PageableDefault(size = 10, page = 0) Pageable pageable) {
+            @PageableDefault(size = 10, page = 1) Pageable pageable) {
+        log.info("Fetching all movies");
         Page<SimpleMovieResponse> movies = movieService.allMovies(pageable);
         return ResponseEntity.ok(movies);
     }

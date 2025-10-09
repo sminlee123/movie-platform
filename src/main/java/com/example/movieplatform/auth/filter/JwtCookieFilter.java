@@ -46,6 +46,7 @@ public class JwtCookieFilter extends OncePerRequestFilter {
             String newToken = jwtUtil.generateAccessToken(userEmail, role);
 
             Cookie cookie = new Cookie("ACCESSTOKEN", newToken);
+            cookie.setPath("/");
             response.addCookie(cookie);
 
             authenticateUser(newToken);

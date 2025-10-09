@@ -11,8 +11,8 @@ import com.example.movieplatform.screen.service.SeatService;
 import com.example.movieplatform.showinginfo.domain.ShowingInfo;
 import com.example.movieplatform.showinginfo.domain.request.ShowingInfoCreateRequest;
 import com.example.movieplatform.showinginfo.domain.response.ShowingInfoResponse;
+import com.example.movieplatform.showinginfo.domain.response.ShowingSeatsResponse;
 import com.example.movieplatform.showinginfo.exception.ShowingDateException;
-import com.example.movieplatform.showinginfo.exception.ShowingInfoAlreadyExistsException;
 import com.example.movieplatform.showinginfo.exception.ShowingInfoNotExistsException;
 import com.example.movieplatform.showinginfo.repository.ShowingInfoRepository;
 import com.example.movieplatform.showinginfo.service.ShowingInfoService;
@@ -54,10 +54,6 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
         Screen screen = screenRepository.findById(request.screenId())
                 .orElseThrow(ScreenNotFoundException::new);
 
-        if (showingInfoRepository.existsByScreenAndShowingDate(screen, request.showingDate())) {
-            throw new ShowingInfoAlreadyExistsException();
-        }
-
         long runtime = Long.parseLong(movie.getRuntime());
         LocalTime startTime = request.startTime();
         LocalTime endTime = startTime.plusMinutes(runtime).plusMinutes(10);
@@ -73,6 +69,9 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
     @Override
     @Transactional(readOnly = true)
     public Page<ShowingInfoResponse> getShowingInfos(Pageable pageable, Long screenId) {
+        Screen screen = screenRepository.findById(screenId)
+                .orElseThrow(ScreenNotFoundException::new);
+
         Page<ShowingInfoResponse> page = showingInfoRepository.findAllShowingsByScreenId(pageable, screenId);
         List<ShowingInfoResponse> content = page.getContent();
 
@@ -99,6 +98,32 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
     }
 
     @Override
+    public List<ShowingInfoResponse> getShowingInfosByMovieId(Long movieId) {
+        Movie movie = movieRepository.findByid(movieId)
+                .orElseThrow(MovieNotExistsException::new);
+
+        List<ShowingInfoResponse> info = showingInfoRepository.findShowingsByMovieId(movieId);
+        List<Long> showingInfoIds = info.stream()
+                .map(ShowingInfoResponse::getId)
+                .toList();
+
+        // 상영정보별 전체 좌석
+        Map<Long, Long> allSeatByShowingInfoId = showingInfoRepository.findTotalCountsByShowingInfoIds(showingInfoIds);
+
+        // 예약된 좌석
+        Map<Long, Long> bookedCountsMap = ticketRepository.findBookedCountsByShowingInfoIds(showingInfoIds);
+
+        for (ShowingInfoResponse dto : info) {
+            Long showingId = dto.getId();
+            long totalSeats = allSeatByShowingInfoId.getOrDefault(showingId, 0L);
+            long bookedSeats = bookedCountsMap.getOrDefault(showingId, 0L);
+            dto.setSeatCounts(totalSeats, bookedSeats);
+        }
+
+        return info;
+    }
+
+    @Override
     public Long deleteShowingInfo(Long showingInfoId) {
         ShowingInfo showingInfo = showingInfoRepository.findById(showingInfoId)
                 .orElseThrow(ShowingInfoNotExistsException::new);
@@ -119,9 +144,15 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
         LocalDateTime reservationAvailableTime = startTime.minusMinutes(30);
 
         if(now.isAfter(reservationAvailableTime)) {
-            throw new TimeAfterException(); // TODO 이름 고민하기
+            throw new TimeAfterException();
         }
 
         return showinginfo;
+    }
+
+    @Override
+    public ShowingSeatsResponse getShowingSeats(Long showingInfoId) {
+        return showingInfoRepository.findShowingSeatsByShowingInfoId(showingInfoId)
+                .orElseThrow(ShowingInfoNotExistsException::new);
     }
 }

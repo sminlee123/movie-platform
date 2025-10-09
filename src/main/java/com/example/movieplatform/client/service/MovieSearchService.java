@@ -3,6 +3,7 @@ package com.example.movieplatform.client.service;
 import com.example.movieplatform.client.MovieSearchClient;
 import com.example.movieplatform.client.domain.response.MovieApiResponse;
 import com.example.movieplatform.client.domain.response.MovieResponseDto;
+import com.example.movieplatform.client.domain.response.PageMovieResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -41,14 +42,14 @@ public class MovieSearchService {
 
         log.info("Movie Search Response: {}", objectMapper.writeValueAsString(response));
 
-
         if (response == null || response.data() == null || response.data().isEmpty() || response.data().get(0).result() == null) {
             return Collections.emptyList();
         }
 
-        return response.data().get(0).result().stream()
+        return response.data().getFirst().result().stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .toList();
+
     }
 
     private MovieResponseDto convertToDto(MovieApiResponse.MovieResult movieResult) {
@@ -78,9 +79,12 @@ public class MovieSearchService {
             MovieApiResponse.Rating ratings = movieResult.ratings().rating().get(0);
             ratingGrade = ratings.ratingGrade();
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-
-            releaseDate =  LocalDate.parse(ratings.releaseDate(), formatter);
+            if (ratings.releaseDate().isEmpty()) {
+                releaseDate = LocalDate.now();
+            } else {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+                releaseDate =  LocalDate.parse(ratings.releaseDate(), formatter);
+            }
             runtime = ratings.runtime();
         }
         return new MovieResponseDto(

@@ -59,9 +59,9 @@ public class UserServiceImpl implements UserService {
     public String getUserRole(String email) {
         User user = getUserByEmail(email);
 
-        String role = "Member";
+        String role = "MEMBER";
         if (user.getIsAdmin()) {
-            role = "Admin";
+            role = "ADMIN";
         }
 
         return role;

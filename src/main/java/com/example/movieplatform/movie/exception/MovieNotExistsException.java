@@ -8,6 +8,6 @@ public class MovieNotExistsException extends ApiException {
     private static final String MESSAGE = "존재하지 않는 영화입니다.";
 
     public MovieNotExistsException() {
-        super(HttpStatus.NO_CONTENT.value(), MESSAGE);
+        super(HttpStatus.NOT_FOUND.value(), MESSAGE);
     }
 }
