@@ -13,7 +13,6 @@ import com.example.movieplatform.showinginfo.domain.request.ShowingInfoCreateReq
 import com.example.movieplatform.showinginfo.domain.response.ShowingInfoResponse;
 import com.example.movieplatform.showinginfo.domain.response.ShowingSeatsResponse;
 import com.example.movieplatform.showinginfo.exception.ShowingDateException;
-import com.example.movieplatform.showinginfo.exception.ShowingInfoAlreadyExistsException;
 import com.example.movieplatform.showinginfo.exception.ShowingInfoNotExistsException;
 import com.example.movieplatform.showinginfo.repository.ShowingInfoRepository;
 import com.example.movieplatform.showinginfo.service.ShowingInfoService;
@@ -55,10 +54,6 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
         Screen screen = screenRepository.findById(request.screenId())
                 .orElseThrow(ScreenNotFoundException::new);
 
-//        if (showingInfoRepository.existsByScreenAndShowingDate(screen, request.showingDate())) {
-//            throw new ShowingInfoAlreadyExistsException();
-//        }
-
         long runtime = Long.parseLong(movie.getRuntime());
         LocalTime startTime = request.startTime();
         LocalTime endTime = startTime.plusMinutes(runtime).plusMinutes(10);
@@ -74,6 +69,9 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
     @Override
     @Transactional(readOnly = true)
     public Page<ShowingInfoResponse> getShowingInfos(Pageable pageable, Long screenId) {
+        Screen screen = screenRepository.findById(screenId)
+                .orElseThrow(ScreenNotFoundException::new);
+
         Page<ShowingInfoResponse> page = showingInfoRepository.findAllShowingsByScreenId(pageable, screenId);
         List<ShowingInfoResponse> content = page.getContent();
 
@@ -146,7 +144,7 @@ public class ShowingInfoServiceImpl implements ShowingInfoService {
         LocalDateTime reservationAvailableTime = startTime.minusMinutes(30);
 
         if(now.isAfter(reservationAvailableTime)) {
-            throw new TimeAfterException(); // TODO 이름 고민하기
+            throw new TimeAfterException();
         }
 
         return showinginfo;

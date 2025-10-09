@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/movies/**").permitAll()
                         .requestMatchers("/api/showing/**").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/movie-search").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

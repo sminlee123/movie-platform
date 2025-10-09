@@ -8,12 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -24,7 +22,7 @@ public class AdminGenreController {
     private final GenreService genreService;
 
     @GetMapping
-    public String genrePage(@PageableDefault(size = 10, page = 0) Pageable pageable,
+    public String genrePage(@PageableDefault(size = 10, page = 1) Pageable pageable,
                             Model model) {
         Page<GenreResponse> genreList = genreService.allGenres(pageable);
         model.addAttribute("genres", genreList);

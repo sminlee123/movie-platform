@@ -29,7 +29,7 @@ public class CustomScreenRepositoryImpl implements CustomScreenRepository {
                 .from(screen)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(screen.id.desc())
+                .orderBy(screen.id.asc())
                 .fetch();
 
         Long total = queryFactory

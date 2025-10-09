@@ -34,7 +34,7 @@ public class CustomMovieRepositoryImpl implements CustomMovieRepository {
                 .from(movie)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(movie.id.desc()) // TODO 정렬 조건 추가
+                .orderBy(movie.releaseDate.desc())
                 .fetch();
 
         Long total = queryFactory

@@ -71,7 +71,7 @@ public class CustomShowingInfoRepositoryImpl implements CustomShowingInfoReposit
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(showingInfo.screen.id.eq(screenId))
-                .orderBy(showingInfo.id.desc())
+                .orderBy(showingInfo.showingDate.desc(), showingInfo.startTime.desc())
                 .fetch();
 
         Long total = queryFactory

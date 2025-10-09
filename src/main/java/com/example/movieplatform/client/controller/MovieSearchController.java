@@ -19,7 +19,7 @@ public class MovieSearchController {
 
     private final MovieSearchService movieSearchService;
 
-    @GetMapping("/api/movies/search")
+    @GetMapping("/api/movie-search")
     public ResponseEntity<List<MovieResponseDto>> getMovies(
             @RequestParam(value = "query") String query,
             @RequestParam(value = "page", defaultValue = "1") int page

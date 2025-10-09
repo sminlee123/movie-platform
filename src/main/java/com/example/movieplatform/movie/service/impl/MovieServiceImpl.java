@@ -29,7 +29,6 @@ public class MovieServiceImpl implements MovieService {
     private final GenreRepository genreRepository;
     private final MovieGenreRepository movieGenreRepository;
 
-    // 영화 전체 리스트 (페이징 처리)
     @Override
     @Transactional(readOnly = true)
     public Page<SimpleMovieResponse> allMovies(Pageable pageable) {
