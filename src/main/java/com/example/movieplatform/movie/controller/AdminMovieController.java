@@ -22,7 +22,8 @@ public class AdminMovieController {
     private final MovieService movieService;
 
     @GetMapping
-    public ResponseEntity<Page<SimpleMovieResponse>> allMovies(@PageableDefault(size = 10, page = 1) Pageable pageable) {
+    public ResponseEntity<Page<SimpleMovieResponse>> allMovies(
+            @PageableDefault(size = 10, page = 1) Pageable pageable) {
         Page<SimpleMovieResponse> movies = movieService.allMovies(pageable);
         return ResponseEntity.ok(movies);
     }

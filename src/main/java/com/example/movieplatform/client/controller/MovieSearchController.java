@@ -1,6 +1,7 @@
 package com.example.movieplatform.client.controller;
 
 import com.example.movieplatform.client.domain.response.MovieResponseDto;
+import com.example.movieplatform.client.domain.response.PageMovieResponse;
 import com.example.movieplatform.client.service.MovieSearchService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +21,11 @@ public class MovieSearchController {
     private final MovieSearchService movieSearchService;
 
     @GetMapping("/api/movie-search")
-    public ResponseEntity<List<MovieResponseDto>> getMovies(
+    public ResponseEntity<PageMovieResponse> getMovies(
             @RequestParam(value = "query") String query,
             @RequestParam(value = "page", defaultValue = "1") int page
     ) throws JsonProcessingException {
-        List<MovieResponseDto> movies = movieSearchService.searchMovie(query, page);
+        PageMovieResponse movies = movieSearchService.searchMovie(query, page);
         return ResponseEntity.ok(movies);
     }
 }

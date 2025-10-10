@@ -29,9 +29,9 @@ public class MovieSearchService {
     private String apiKey;
 
     private final String COLLECTION = "kmdb_new2";
-    private final int DEFAULT_LIST_COUNT = 10;
+    private final int DEFAULT_LIST_COUNT = 20;
 
-    public List<MovieResponseDto> searchMovie(String query, int pageNumber) throws JsonProcessingException {
+    public PageMovieResponse searchMovie(String query, int pageNumber) throws JsonProcessingException {
         int startCount = (pageNumber - 1) * DEFAULT_LIST_COUNT;
         String apiResponse = movieSearchClient.movieSearch(
                 apiKey, COLLECTION, query, startCount, DEFAULT_LIST_COUNT);
@@ -43,12 +43,14 @@ public class MovieSearchService {
         log.info("Movie Search Response: {}", objectMapper.writeValueAsString(response));
 
         if (response == null || response.data() == null || response.data().isEmpty() || response.data().get(0).result() == null) {
-            return Collections.emptyList();
+            return new PageMovieResponse(0, Collections.emptyList());
         }
 
-        return response.data().getFirst().result().stream()
+        List<MovieResponseDto> responseDto = response.data().getFirst().result().stream()
                 .map(this::convertToDto)
                 .toList();
+
+        return new PageMovieResponse(response.totalCount(), responseDto);
 
     }
 
@@ -82,8 +84,9 @@ public class MovieSearchService {
             if (ratings.releaseDate().isEmpty()) {
                 releaseDate = LocalDate.now();
             } else {
+                String releasing = ratings.releaseDate().split("\\|\\|")[0].trim();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-                releaseDate =  LocalDate.parse(ratings.releaseDate(), formatter);
+                releaseDate =  LocalDate.parse(releasing, formatter);
             }
             runtime = ratings.runtime();
         }
