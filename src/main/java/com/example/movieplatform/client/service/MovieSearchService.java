@@ -29,7 +29,7 @@ public class MovieSearchService {
     private String apiKey;
 
     private final String COLLECTION = "kmdb_new2";
-    private final int DEFAULT_LIST_COUNT = 20;
+    private final int DEFAULT_LIST_COUNT = 10;
 
     public PageMovieResponse searchMovie(String query, int pageNumber) throws JsonProcessingException {
         int startCount = (pageNumber - 1) * DEFAULT_LIST_COUNT;

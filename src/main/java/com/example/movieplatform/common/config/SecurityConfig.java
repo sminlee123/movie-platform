@@ -31,17 +31,14 @@ public class SecurityConfig {
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/signup").permitAll()
                         .requestMatchers("/auth/**", "/users").permitAll()
-                        .requestMatchers("/admin/**").permitAll()
-                        .requestMatchers("/movies/**").permitAll()
                         .requestMatchers("/api/user/me").authenticated()
-
                         .requestMatchers("/api/signup").permitAll()
                         .requestMatchers("/api/mypage/**").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
                         .requestMatchers("/api/movies/**").permitAll()
                         .requestMatchers("/api/showing/**").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/movie-search").permitAll()
+                        .requestMatchers("/api/movie-search").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
