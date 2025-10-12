@@ -25,6 +25,7 @@ public class CustomTicketRepositoryImpl implements CustomTicketRepository {
 
     @Override
     public Map<Long, Long> findBookedCountsByShowingInfoIds(List<Long> showingInfoIds) {
+
         // Tuple 여러 타입의 데이터를 담을 수 있는 임시 보관 상자
         List<Tuple> tuples = queryFactory
                 .select(ticket.showingInfo.id, ticket.count())
