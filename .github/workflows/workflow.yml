@@ -53,7 +53,7 @@ jobs:
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/my-app:latest
             
-            if [ "$(docker ps -q -f name=my-running-app)" ]; then
+            if [ "$(docker ps -a -q -f name=my-running-app)" ]; then
               docker stop my-running-app
               docker rm my-running-app
             fi
