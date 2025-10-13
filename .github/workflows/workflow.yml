@@ -39,7 +39,30 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: . # Dockerfile이 있는 경로 (현재 디렉토리)
+          context: . # Dockerfile이 있는 경로
           file: ./Dockerfile # Dockerfile 파일명
           push: true # 빌드 후 이미지를 Docker Hub에 푸시
           tags: ${{ secrets.DOCKER_USERNAME }}/my-app:latest # 이미지 태그 설정
+
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/my-app:latest
+            
+            if [ "$(docker ps -q -f name=my-running-app)" ]; then
+              docker stop my-running-app
+              docker rm my-running-app
+            fi
+            
+            docker run -d -p 8080:8080 \
+              -e SPRING_DATASOURCE_URL='${{ secrets.DB_URL }}' \
+              -e SPRING_DATASOURCE_USERNAME='${{ secrets.DB_USERNAME }}' \
+              -e SPRING_DATASOURCE_PASSWORD='${{ secrets.DB_PASSWORD }}' \
+              -e MYAPI_KEY='${{ secrets.MYAPI_KEY }}' \
+              -e SPRING_PROFILES_ACTIVE=prod \
+              --name my-running-app \
+              ${{ secrets.DOCKER_USERNAME }}/my-app:latest
