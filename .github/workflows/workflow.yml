@@ -24,9 +24,6 @@ jobs:
           distribution: 'temurin'
           cache: maven  # 의존성 캐싱
 
-      - name: Dependencies install
-        run: npm ci
-
       - name: Build
         run: mvn clean package
 
