@@ -1,7 +1,6 @@
 name: workflow  # 워크 플로우 이름
 
 # workflow 실행 트리거
-# develop 브랜치에 push, pull_request 할 때
 on:
   push:
     branches: ["develop"]
@@ -10,7 +9,7 @@ on:
 
 # 작업 단위
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest # job을 실행하는 서버 환경 (가상 머신)
 
     # job 안의 단계
@@ -25,8 +24,11 @@ jobs:
           distribution: 'temurin'
           cache: maven  # 의존성 캐싱
 
+      - name: Dependencies install
+        run: npm ci
+
       - name: Build
-        run: mvn clean package # 가상 머신에서 터미널 명령어처럼 실행
+        run: mvn clean package
 
       # 도커 배포 작업
       # 로그인
@@ -39,10 +41,10 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: . # Dockerfile이 있는 경로
+          context: ./target
           file: ./Dockerfile # Dockerfile 파일명
           push: true # 빌드 후 이미지를 Docker Hub에 푸시
-          tags: ${{ secrets.DOCKER_USERNAME }}/my-app:latest # 이미지 태그 설정
+          tags: ${{ secrets.DOCKER_USERNAME }}/my-app:latest # 사용자이름 / 이미지 이름 : 태그
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
