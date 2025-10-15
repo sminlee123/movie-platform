@@ -50,7 +50,6 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         response.addCookie(accessToken);
         response.addCookie(refreshToken);
-
-        response.sendRedirect("/");
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 }
