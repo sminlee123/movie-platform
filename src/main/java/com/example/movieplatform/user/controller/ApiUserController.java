@@ -24,8 +24,11 @@ public class ApiUserController {
 
         User currentUser = authenticationUtil.getCurrentUser();
 
-        UserResponse response = new UserResponse(currentUser.getId(), currentUser.getUserName());
+        if(currentUser == null){
+            return ResponseEntity.noContent().build();
+        }
 
+        UserResponse response = new UserResponse(currentUser.getId(), currentUser.getUserName());
         return ResponseEntity.ok(response);
     }
 

@@ -50,6 +50,8 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            docker network create my-app-network || true
+            
             docker pull ${{ secrets.DOCKER_USERNAME }}/my-app:latest
             
             if [ "$(docker ps -a -q -f name=my-running-app)" ]; then

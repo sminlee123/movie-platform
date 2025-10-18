@@ -14,7 +14,8 @@ import com.example.movieplatform.auth.utils.JwtUtil;
     import org.springframework.security.core.authority.SimpleGrantedAuthority;
     import org.springframework.security.core.context.SecurityContextHolder;
     import org.springframework.stereotype.Component;
-    import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.web.filter.OncePerRequestFilter;
 
     import java.io.IOException;
     import java.util.List;
@@ -26,6 +27,13 @@ public class JwtCookieFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserService userService;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return pathMatcher.match("/api/logout", request.getRequestURI()) &&
+                "POST".equalsIgnoreCase(request.getMethod());
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -42,7 +50,6 @@ public class JwtCookieFilter extends OncePerRequestFilter {
             log.info("엑세스 발급");
             String role = userService.getUserRole(userEmail);
 
-            // 리프레시 토큰으로 엑세스 토큰 재발급
             String newToken = jwtUtil.generateAccessToken(userEmail, role);
 
             Cookie cookie = new Cookie("ACCESSTOKEN", newToken);

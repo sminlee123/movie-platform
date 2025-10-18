@@ -36,12 +36,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(User user) {
-
-        // TODO 비밀번호 매치 추가
-//        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-//            throw new NotMatchPasswordException();
-//        }
-
         userRepository.delete(user);
 
         log.info("User deleted successfully: {}", user.getEmail());

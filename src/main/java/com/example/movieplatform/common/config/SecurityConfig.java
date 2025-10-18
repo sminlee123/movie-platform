@@ -38,10 +38,9 @@ public class SecurityConfig {
                 .securityMatcher("/**") // 모든 요청
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/").permitAll()
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers("/signup").permitAll()
+                        .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/auth/**", "/users").permitAll()
-                        .requestMatchers("/api/user/me").authenticated()
+                        .requestMatchers("/api/user/me").permitAll()
                         .requestMatchers("/api/signup").permitAll()
                         .requestMatchers("/api/mypage/**").authenticated()
                         .requestMatchers("/api/reservations/**").authenticated()
@@ -52,16 +51,19 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginProcessingUrl("/login") // 로그인 처리
+                        .loginProcessingUrl("/api/login") // 로그인 처리
                         .usernameParameter("email")
                         .successHandler(customLoginSuccessHandler)
                         .failureHandler(customLoginFailHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/api/logout")
                         .addLogoutHandler(customLogoutHandler)
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessHandler(
+                                (request, response, authentication) ->
+                                        response.setStatus(HttpServletResponse.SC_OK)
+                        )
                 )
                 .csrf(csrf -> csrf.disable()) // 람다 방식으로 CSRF 비활성화
 
