@@ -3,9 +3,9 @@ name: workflow  # 워크 플로우 이름
 # workflow 실행 트리거
 on:
   push:
-    branches: ["develop"]
+    branches: ["develo"]
   pull_request:
-    branches: ["develop"]
+    branches: ["develo"]
 
 # 작업 단위
 jobs:
