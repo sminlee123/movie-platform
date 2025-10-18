@@ -59,7 +59,7 @@ jobs:
               docker rm my-running-app
             fi
             
-            docker run -d -p 8080:8080 \
+            docker run -d  \
               -m 512m \
               -e SPRING_DATASOURCE_URL='${{ secrets.DB_URL }}' \
               -e SPRING_DATASOURCE_USERNAME='${{ secrets.DB_USERNAME }}' \
@@ -67,5 +67,6 @@ jobs:
               -e MYAPI_KEY='${{ secrets.MYAPI_KEY }}' \
               -e SPRING_PROFILES_ACTIVE=prod \
               -e REACT_URL='${{ secrets.CORS_PROD_URL }}' \
+              --network my-app-network \
               --name my-running-app \
               ${{ secrets.DOCKER_USERNAME }}/my-app:latest
