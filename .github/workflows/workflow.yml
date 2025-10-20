@@ -3,9 +3,9 @@ name: workflow  # 워크 플로우 이름
 # workflow 실행 트리거
 on:
   push:
-    branches: ["develo"]
+    branches: ["develop"]
   pull_request:
-    branches: ["develo"]
+    branches: ["develop"]
 
 # 작업 단위
 jobs:
@@ -66,7 +66,6 @@ jobs:
               -e SPRING_DATASOURCE_PASSWORD='${{ secrets.DB_PASSWORD }}' \
               -e MYAPI_KEY='${{ secrets.MYAPI_KEY }}' \
               -e SPRING_PROFILES_ACTIVE=prod \
-              -e REACT_URL='${{ secrets.CORS_PROD_URL }}' \
               --network my-app-network \
               --name my-running-app \
               ${{ secrets.DOCKER_USERNAME }}/my-app:latest
