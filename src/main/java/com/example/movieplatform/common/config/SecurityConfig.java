@@ -25,7 +25,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/**") // 모든 요청
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .securityMatcher("/", "/api/**", "/auth/**", "/users")
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/login").permitAll()
