@@ -10,9 +10,7 @@
 
 ## 🧩 시스템 아키텍처
 
-## 🧰 기술 스택
-
-## 🛠️ 기술 스택 (Tech Stack)
+## 🛠️ 기술 스택
 
 * **Backend:**
     * Language: Java
