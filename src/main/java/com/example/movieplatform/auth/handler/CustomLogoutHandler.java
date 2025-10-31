@@ -16,12 +16,7 @@ public class CustomLogoutHandler implements LogoutHandler {
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
-        Cookie accessToken = new Cookie("ACCESSTOKEN", null);
-        accessToken.setPath("/");
-        accessToken.setHttpOnly(true);
-        accessToken.setMaxAge(0);
-        response.addCookie(accessToken);
-
+        // 리프레시 삭제
         Cookie refreshToken = new Cookie("REFRESHTOKEN", null);
         refreshToken.setPath("/");
         refreshToken.setHttpOnly(true);

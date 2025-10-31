@@ -43,29 +43,29 @@ jobs:
           push: true # 빌드 후 이미지를 Docker Hub에 푸시
           tags: ${{ secrets.DOCKER_USERNAME }}/my-app:latest # 사용자이름 / 이미지 이름 : 태그
 
-      - name: Deploy to Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            docker network create my-app-network || true
-            
-            docker pull ${{ secrets.DOCKER_USERNAME }}/my-app:latest
-            
-            if [ "$(docker ps -a -q -f name=my-running-app)" ]; then
-              docker stop my-running-app
-              docker rm my-running-app
-            fi
-            
-            docker run -d  \
-              -m 512m \
-              -e SPRING_DATASOURCE_URL='${{ secrets.DB_URL }}' \
-              -e SPRING_DATASOURCE_USERNAME='${{ secrets.DB_USERNAME }}' \
-              -e SPRING_DATASOURCE_PASSWORD='${{ secrets.DB_PASSWORD }}' \
-              -e MYAPI_KEY='${{ secrets.MYAPI_KEY }}' \
-              -e SPRING_PROFILES_ACTIVE=prod \
-              --network my-app-network \
-              --name my-running-app \
-              ${{ secrets.DOCKER_USERNAME }}/my-app:latest
+#      - name: Deploy to Server
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.HOST }}
+#          username: ${{ secrets.USERNAME }}
+#          key: ${{ secrets.SSH_KEY }}
+#          script: |
+#            docker network create my-app-network || true
+#
+#            docker pull ${{ secrets.DOCKER_USERNAME }}/my-app:latest
+#
+#            if [ "$(docker ps -a -q -f name=my-running-app)" ]; then
+#              docker stop my-running-app
+#              docker rm my-running-app
+#            fi
+#
+#            docker run -d  \
+#              -m 512m \
+#              -e SPRING_DATASOURCE_URL='${{ secrets.DB_URL }}' \
+#              -e SPRING_DATASOURCE_USERNAME='${{ secrets.DB_USERNAME }}' \
+#              -e SPRING_DATASOURCE_PASSWORD='${{ secrets.DB_PASSWORD }}' \
+#              -e MYAPI_KEY='${{ secrets.MYAPI_KEY }}' \
+#              -e SPRING_PROFILES_ACTIVE=prod \
+#              --network my-app-network \
+#              --name my-running-app \
+#              ${{ secrets.DOCKER_USERNAME }}/my-app:latest
