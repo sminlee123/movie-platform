@@ -50,14 +50,8 @@ public class JwtUtil {
     }
 
     // 검증
-    public boolean validateToken(String token) {
-        try {
-            Claims claims = parseClaims(token);  // 서명 검증 포함
-            return true;
-        } catch (JwtException | IllegalArgumentException e) { // JwtToken 최상위 예외
-            log.debug("Invalid JWT: {}", e.getMessage());
-            return false;
-        }
+    public void validateToken(String token) {
+        parseClaims(token);
     }
 
     // 유저 이메일 반환

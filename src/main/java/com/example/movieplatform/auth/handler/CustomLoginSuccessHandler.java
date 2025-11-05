@@ -3,6 +3,7 @@ package com.example.movieplatform.auth.handler;
 import com.example.movieplatform.auth.domain.CustomUserDetails;
 import com.example.movieplatform.auth.utils.JwtUtil;
 import com.example.movieplatform.user.domain.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,15 +15,21 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
-    // 로그인 성공 시 쿠키 심는 핸들러
+    // 로그인 성공 시 세팅 핸들러
 
     private final JwtUtil jwtUtil;
+    private final ObjectMapper objectMapper;
+
+    public static final int REFRESH_AGE = 7 * 24 * 60 * 60;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -33,23 +40,31 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         User user = userDetails.getUser();
-
-        log.info(user.toString());
-
         String userRole = user.getIsAdmin() ? "ADMIN" : "MEMBER";
 
-        Cookie accessToken = new Cookie("ACCESSTOKEN",
-                jwtUtil.generateAccessToken(user.getEmail(), userRole));
+        // 엑세스
+        String accessToken = jwtUtil.generateAccessToken(user.getEmail(), userRole);
+
+        // 리프레시
         Cookie refreshToken = new Cookie("REFRESHTOKEN",
                 jwtUtil.generateRefreshToken(user.getEmail()));
-
-        accessToken.setHttpOnly(true);
-        accessToken.setPath("/");
         refreshToken.setHttpOnly(true);
         refreshToken.setPath("/");
+        refreshToken.setMaxAge(REFRESH_AGE);
+        refreshToken.setSecure(true);
 
-        response.addCookie(accessToken);
         response.addCookie(refreshToken);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        Map<String, String> tokenMap = new HashMap<>();
+        tokenMap.put("accessToken", accessToken);
+
+        String jsonResponse = objectMapper.writeValueAsString(tokenMap);
+
+        PrintWriter writer = response.getWriter();
+        writer.print(jsonResponse);
+        writer.flush();
 
         response.setStatus(HttpServletResponse.SC_OK);
     }

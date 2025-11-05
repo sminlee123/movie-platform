@@ -2,7 +2,8 @@ package com.example.movieplatform.auth.filter;
 
 import com.example.movieplatform.auth.utils.JwtUtil;
     import com.example.movieplatform.user.service.UserService;
-    import jakarta.servlet.FilterChain;
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.FilterChain;
     import jakarta.servlet.ServletException;
     import jakarta.servlet.http.Cookie;
     import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import com.example.movieplatform.auth.utils.JwtUtil;
     import org.springframework.security.core.context.SecurityContextHolder;
     import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
     import java.io.IOException;
@@ -26,50 +28,41 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtCookieFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserService userService;
-    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+//    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return pathMatcher.match("/api/logout", request.getRequestURI()) &&
-                "POST".equalsIgnoreCase(request.getMethod());
-    }
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+//        return pathMatcher.match("/api/logout", request.getRequestURI()) &&
+//                "POST".equalsIgnoreCase(request.getMethod());
+//    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String accessToken = getTokenFromCookies(request, "ACCESSTOKEN");
-        String refreshToken = getTokenFromCookies(request, "REFRESHTOKEN");
+        String accessToken = getTokenFromHeader(request);
 
-        if (accessToken != null && jwtUtil.validateToken(accessToken)) {
-            authenticateUser(accessToken);
-        } else if (refreshToken != null && jwtUtil.validateToken(refreshToken)) {
-            String userEmail = jwtUtil.getUserEmail(refreshToken);
-            log.info("엑세스 발급");
-            String role = userService.getUserRole(userEmail);
+        log.debug("accessToken: {}", accessToken);
 
-            String newToken = jwtUtil.generateAccessToken(userEmail, role);
-
-            Cookie cookie = new Cookie("ACCESSTOKEN", newToken);
-            cookie.setPath("/");
-            response.addCookie(cookie);
-
-            authenticateUser(newToken);
+        if (StringUtils.hasText(accessToken)) {
+            try {
+                authenticateUser(accessToken);
+            } catch (ExpiredJwtException e) {
+                log.warn("Access token has expired");
+            } catch (Exception e) {
+                log.warn("Invalid access token");
+            }
         }
 
         filterChain.doFilter(request, response);
     }
 
-    // 쿠키 추출 메서드
-    private String getTokenFromCookies(HttpServletRequest request, String name) {
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals(name)) {
-                    return cookie.getValue();
-                }
-            }
+    // 헤더에서 AccessToken 추출
+    private String getTokenFromHeader(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
         }
         return null;
     }
