@@ -1,26 +1,23 @@
 package com.example.movieplatform.auth.filter;
 
 import com.example.movieplatform.auth.utils.JwtUtil;
-    import com.example.movieplatform.user.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
-    import jakarta.servlet.ServletException;
-    import jakarta.servlet.http.Cookie;
-    import jakarta.servlet.http.HttpServletRequest;
-    import jakarta.servlet.http.HttpServletResponse;
-    import lombok.RequiredArgsConstructor;
-    import lombok.extern.slf4j.Slf4j;
-    import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-    import org.springframework.security.core.GrantedAuthority;
-    import org.springframework.security.core.authority.SimpleGrantedAuthority;
-    import org.springframework.security.core.context.SecurityContextHolder;
-    import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-    import java.io.IOException;
-    import java.util.List;
+import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -50,8 +47,12 @@ public class JwtCookieFilter extends OncePerRequestFilter {
                 authenticateUser(accessToken);
             } catch (ExpiredJwtException e) {
                 log.warn("Access token has expired");
+                sendErrorResponse(response, "EXPIRED");
+                return;
             } catch (Exception e) {
-                log.warn("Invalid access token");
+                log.warn("InValid access token");
+                sendErrorResponse(response, "INVALID");
+                return;
             }
         }
 
@@ -80,5 +81,12 @@ public class JwtCookieFilter extends OncePerRequestFilter {
                 new UsernamePasswordAuthenticationToken(userEmail, null, authorities);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    public void sendErrorResponse(HttpServletResponse response, String errorCode) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.format("{\"error\": \"%s\"}", errorCode));
     }
 }
