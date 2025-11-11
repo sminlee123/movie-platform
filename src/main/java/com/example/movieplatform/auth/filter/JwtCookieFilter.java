@@ -28,13 +28,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtCookieFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+//    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return pathMatcher.match("/api/logout", request.getRequestURI()) &&
-                "POST".equalsIgnoreCase(request.getMethod());
-    }
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+//        return pathMatcher.match("/api/logout", request.getRequestURI()) &&
+//                "POST".equalsIgnoreCase(request.getMethod());
+//    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -42,6 +42,8 @@ public class JwtCookieFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String accessToken = getTokenFromHeader(request);
+
+        log.debug("accessToken: {}", accessToken);
 
         if (StringUtils.hasText(accessToken)) {
             try {
