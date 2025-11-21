@@ -1,26 +1,23 @@
 package com.example.movieplatform.auth.filter;
 
 import com.example.movieplatform.auth.utils.JwtUtil;
-    import com.example.movieplatform.user.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
-    import jakarta.servlet.ServletException;
-    import jakarta.servlet.http.Cookie;
-    import jakarta.servlet.http.HttpServletRequest;
-    import jakarta.servlet.http.HttpServletResponse;
-    import lombok.RequiredArgsConstructor;
-    import lombok.extern.slf4j.Slf4j;
-    import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-    import org.springframework.security.core.GrantedAuthority;
-    import org.springframework.security.core.authority.SimpleGrantedAuthority;
-    import org.springframework.security.core.context.SecurityContextHolder;
-    import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-    import java.io.IOException;
-    import java.util.List;
+import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -45,14 +42,26 @@ public class JwtCookieFilter extends OncePerRequestFilter {
 
         log.debug("accessToken: {}", accessToken);
 
-        if (StringUtils.hasText(accessToken)) {
-            try {
-                authenticateUser(accessToken);
-            } catch (ExpiredJwtException e) {
-                log.warn("Access token has expired");
-            } catch (Exception e) {
-                log.warn("Invalid access token");
+        boolean isProtectedPath = request.getRequestURI().startsWith("/api/admin")
+                || request.getRequestURI().startsWith("/api/mypage");
+
+        if (!StringUtils.hasText(accessToken)) {
+            if (isProtectedPath) {
+                sendErrorResponse(response, "NOT_EXISTS");
+            } else {
+                filterChain.doFilter(request, response);
             }
+            return;
+        }
+
+        try {
+            authenticateUser(accessToken);
+        } catch (ExpiredJwtException e) {
+            sendErrorResponse(response, "EXPIRED");
+            return;
+        } catch (Exception e) {
+            sendErrorResponse(response, "INVALID");
+            return;
         }
 
         filterChain.doFilter(request, response);
@@ -80,5 +89,12 @@ public class JwtCookieFilter extends OncePerRequestFilter {
                 new UsernamePasswordAuthenticationToken(userEmail, null, authorities);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    public void sendErrorResponse(HttpServletResponse response, String errorCode) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(String.format("{\"error\": \"%s\"}", errorCode));
     }
 }
