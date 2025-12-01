@@ -16,6 +16,7 @@ public interface SeatRepository extends JpaRepository<Seat, Long>, CustomSeatRep
     Long countAllSeatsByScreen(Screen screen);
     void deleteAllByScreen(Screen screen);
 
+    // 비관적 락 추가
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Seat> findByScreenAndIdIn(Screen screen, List<Long> seatIds);
 }
