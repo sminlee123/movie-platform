@@ -1,5 +1,6 @@
 package com.example.movieplatform.auth.controller;
 
+import com.example.movieplatform.auth.utils.CsrfUtil;
 import com.example.movieplatform.auth.utils.JwtUtil;
 import com.example.movieplatform.user.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -9,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -26,13 +24,20 @@ public class RefreshTokenController {
 
     private final JwtUtil jwtUtil;
     private final UserService userService;
+    private final CsrfUtil csrfUtil;
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshAccessToken(
             @CookieValue(value = "REFRESHTOKEN", required = false) String refreshToken,
+            @CookieValue(value = "XSRF-TOKEN", required = false) String csrfToken,
+            @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfHeader,
             HttpServletResponse response
     ) {
         log.info("POST /api/auth/refresh started.");
+
+        if (csrfToken == null || csrfHeader == null || !csrfToken.equals(csrfHeader)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid csrf token");
+        }
 
         if (refreshToken == null) {
             log.warn("Refresh token not found");
@@ -58,8 +63,23 @@ public class RefreshTokenController {
         String newRefreshToken = jwtUtil.generateRefreshToken(userEmail);
         addRefreshToken(response, newRefreshToken); // 새 리프레시 토큰 추가
 
+        String newCsrfToken = csrfUtil.generateCsrfToken();
+        addCsrfToken(response, newCsrfToken);
+
         log.info("AccessToken and RefreshToken Issue {}.", userEmail);
         return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+    }
+
+    private void addCsrfToken(HttpServletResponse response, String newCsrfToken) {
+        log.info("Adding csrf token.");
+
+        Cookie csrfToken = new Cookie("XSRF-TOKEN", newCsrfToken);
+        csrfToken.setHttpOnly(false);
+        csrfToken.setPath("/");
+        csrfToken.setMaxAge(REFRESH_AGE);
+        csrfToken.setSecure(true);
+
+        response.addCookie(csrfToken);
     }
 
     private void addRefreshToken(HttpServletResponse response, String newRefreshToken) {

@@ -42,18 +42,26 @@ public class JwtCookieFilter extends OncePerRequestFilter {
 
         log.debug("accessToken: {}", accessToken);
 
-        if (StringUtils.hasText(accessToken)) {
-            try {
-                authenticateUser(accessToken);
-            } catch (ExpiredJwtException e) {
-                log.warn("Access token has expired");
-                sendErrorResponse(response, "EXPIRED");
-                return;
-            } catch (Exception e) {
-                log.warn("InValid access token");
-                sendErrorResponse(response, "INVALID");
-                return;
+        boolean isProtectedPath = request.getRequestURI().startsWith("/api/admin")
+                || request.getRequestURI().startsWith("/api/mypage");
+
+        if (!StringUtils.hasText(accessToken)) {
+            if (isProtectedPath) {
+                sendErrorResponse(response, "NOT_EXISTS");
+            } else {
+                filterChain.doFilter(request, response);
             }
+            return;
+        }
+
+        try {
+            authenticateUser(accessToken);
+        } catch (ExpiredJwtException e) {
+            sendErrorResponse(response, "EXPIRED");
+            return;
+        } catch (Exception e) {
+            sendErrorResponse(response, "INVALID");
+            return;
         }
 
         filterChain.doFilter(request, response);
