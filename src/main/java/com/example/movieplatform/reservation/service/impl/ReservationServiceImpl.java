@@ -50,9 +50,14 @@ public class ReservationServiceImpl implements ReservationService {
         // 상영정보 검증 (존재 유무, 상영일자 체크)
         ShowingInfo showingInfo = showingInfoService.validateShowingInfo(request.showingInfoId());
 
-        // 좌석 존재 유무 체크
-        List<Seat> seats = seatRepository.findByScreenAndIdIn(showingInfo.getScreen(), request.seatIds());
+        List<Long> sortedSeatIds = request.seatIds().stream()
+                .sorted()
+                .toList();
 
+        // 좌석 존재 유무 체크
+        List<Seat> seats = seatRepository.findByScreenAndIdIn(showingInfo.getScreen(), sortedSeatIds);
+
+        // 좌석 수 체크
         if (seats.size() != request.seatIds().size()) {
             throw new SeatNotFoundException();
         }
