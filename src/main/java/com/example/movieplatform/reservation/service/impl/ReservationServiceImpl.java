@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -44,6 +45,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final TicketService ticketService;
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public ReservationDetailResponse createReservation(ReservationRequest request, User user) {
         log.info("Seat id {}", request.seatIds());
 
