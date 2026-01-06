@@ -38,6 +38,8 @@ public class JwtCookieFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        log.info("Url : {}", request.getRequestURI());
+
         String accessToken = getTokenFromHeader(request);
 
         log.debug("accessToken: {}", accessToken);

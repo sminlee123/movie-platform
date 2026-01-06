@@ -1,159 +1,159 @@
-package com.example.movieplatform.reservation.service.impl;
+    package com.example.movieplatform.reservation.service.impl;
 
-import com.example.movieplatform.reservation.domain.Reservation;
-import com.example.movieplatform.reservation.domain.ReservationStatus;
-import com.example.movieplatform.reservation.domain.request.ReservationRequest;
-import com.example.movieplatform.reservation.domain.response.ReservationDetailResponse;
-import com.example.movieplatform.reservation.domain.response.ReservationInfoTuple;
-import com.example.movieplatform.reservation.domain.response.ReservationResponse;
-import com.example.movieplatform.reservation.exception.ReservationCancelException;
-import com.example.movieplatform.reservation.exception.ReservationNotExistsException;
-import com.example.movieplatform.reservation.repository.ReservationRepository;
-import com.example.movieplatform.reservation.service.ReservationService;
-import com.example.movieplatform.screen.domain.Seat;
-import com.example.movieplatform.screen.exception.SeatNotAvailableException;
-import com.example.movieplatform.screen.exception.SeatNotFoundException;
-import com.example.movieplatform.screen.repository.SeatRepository;
-import com.example.movieplatform.showinginfo.domain.ShowingInfo;
-import com.example.movieplatform.showinginfo.service.ShowingInfoService;
-import com.example.movieplatform.ticket.domain.Ticket;
-import com.example.movieplatform.ticket.exception.ReservationTicketNotExistsException;
-import com.example.movieplatform.ticket.repository.TicketRepository;
-import com.example.movieplatform.ticket.service.TicketService;
-import com.example.movieplatform.user.domain.User;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
+    import com.example.movieplatform.reservation.domain.Reservation;
+    import com.example.movieplatform.reservation.domain.ReservationStatus;
+    import com.example.movieplatform.reservation.domain.request.ReservationRequest;
+    import com.example.movieplatform.reservation.domain.response.ReservationDetailResponse;
+    import com.example.movieplatform.reservation.domain.response.ReservationInfoTuple;
+    import com.example.movieplatform.reservation.domain.response.ReservationResponse;
+    import com.example.movieplatform.reservation.exception.ReservationCancelException;
+    import com.example.movieplatform.reservation.exception.ReservationNotExistsException;
+    import com.example.movieplatform.reservation.repository.ReservationRepository;
+    import com.example.movieplatform.reservation.service.ReservationService;
+    import com.example.movieplatform.screen.domain.Seat;
+    import com.example.movieplatform.screen.exception.SeatNotAvailableException;
+    import com.example.movieplatform.screen.exception.SeatNotFoundException;
+    import com.example.movieplatform.screen.repository.SeatRepository;
+    import com.example.movieplatform.showinginfo.domain.ShowingInfo;
+    import com.example.movieplatform.showinginfo.service.ShowingInfoService;
+    import com.example.movieplatform.ticket.domain.Ticket;
+    import com.example.movieplatform.ticket.exception.ReservationTicketNotExistsException;
+    import com.example.movieplatform.ticket.repository.TicketRepository;
+    import com.example.movieplatform.ticket.service.TicketService;
+    import com.example.movieplatform.user.domain.User;
+    import lombok.RequiredArgsConstructor;
+    import lombok.extern.slf4j.Slf4j;
+    import org.springframework.data.domain.Page;
+    import org.springframework.data.domain.Pageable;
+    import org.springframework.stereotype.Service;
+    import org.springframework.transaction.annotation.Isolation;
+    import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
+    import java.time.LocalDateTime;
+    import java.util.List;
 
-@Slf4j
-@Service
-@Transactional
-@RequiredArgsConstructor
-public class ReservationServiceImpl implements ReservationService {
+    @Slf4j
+    @Service
+    @Transactional
+    @RequiredArgsConstructor
+    public class ReservationServiceImpl implements ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final SeatRepository seatRepository;
-    private final TicketRepository ticketRepository;
-    private final ShowingInfoService showingInfoService;
-    private final TicketService ticketService;
+        private final ReservationRepository reservationRepository;
+        private final SeatRepository seatRepository;
+        private final TicketRepository ticketRepository;
+        private final ShowingInfoService showingInfoService;
+        private final TicketService ticketService;
 
-    @Override
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ReservationDetailResponse createReservation(ReservationRequest request, User user) {
-        log.info("Seat id {}", request.seatIds());
+        @Override
+        @Transactional(isolation = Isolation.READ_COMMITTED)
+        public ReservationDetailResponse createReservation(ReservationRequest request, User user) {
+            log.info("Seat id {}", request.seatIds());
 
-        // 상영정보 검증 (존재 유무, 상영일자 체크)
-        ShowingInfo showingInfo = showingInfoService.validateShowingInfo(request.showingInfoId());
+            // 상영정보 검증 (존재 유무, 상영일자 체크)
+            ShowingInfo showingInfo = showingInfoService.validateShowingInfo(request.showingInfoId());
 
-        List<Long> sortedSeatIds = request.seatIds().stream()
-                .sorted()
-                .toList();
+            List<Long> sortedSeatIds = request.seatIds().stream()
+                    .sorted()
+                    .toList();
 
-        // 좌석 존재 유무 체크
-        List<Seat> seats = seatRepository.findByScreenAndIdIn(showingInfo.getScreen(), sortedSeatIds);
+            // 좌석 존재 유무 체크
+            List<Seat> seats = seatRepository.findByScreenAndIdIn(showingInfo.getScreen(), sortedSeatIds);
 
-        // 좌석 수 체크
-        if (seats.size() != request.seatIds().size()) {
-            throw new SeatNotFoundException();
+            // 좌석 수 체크
+            if (seats.size() != request.seatIds().size()) {
+                throw new SeatNotFoundException();
+            }
+
+            // 예매 유무 체크
+            if (ticketRepository.validateTicketForReservation(showingInfo, seats)) {
+                throw new SeatNotAvailableException();
+            }
+
+            int totalPrice = seats.size() * showingInfo.getPrice();
+
+            // 예약 및 티켓 생성
+            Reservation reservation = Reservation.create(user, totalPrice);
+            Reservation savedReservation = reservationRepository.save(reservation);
+
+            ticketService.createAndAddTicketsToReservation(savedReservation, showingInfo, seats);
+
+            log.info("Reservation has been created : {}", reservation);
+
+            ReservationInfoTuple info = reservationRepository.findReservationInfoById(savedReservation.getId())
+                    .orElseThrow(ReservationNotExistsException::new);
+
+            List<String> seatNames = ticketRepository.findSeatNameByReservationId(savedReservation.getId());
+
+            return new ReservationDetailResponse(
+                    info.reservationId(),
+                    info.status().getDescription(),
+                    info.reservationDate(),
+                    info.finalPrice(),
+                    info.movieTitle(),
+                    info.posterUrl(),
+                    info.screenName(),
+                    info.showingDate(),
+                    info.startTime(),
+                    info.endTime(),
+                    seatNames
+            );
         }
 
-        // 예매 유무 체크
-        if (ticketRepository.validateTicketForReservation(showingInfo, seats)) {
-            throw new SeatNotAvailableException();
+        @Override
+        @Transactional(readOnly = true)
+        public Page<ReservationResponse> getReservationsByUserId(Long userId, Pageable pageable) {
+            return reservationRepository.findAllReservationsByUserId(userId, pageable);
         }
 
-        int totalPrice = seats.size() * showingInfo.getPrice();
+        @Override
+        @Transactional(readOnly = true)
+        public ReservationDetailResponse getReservationDetails(Long reservationId) {
+            ReservationInfoTuple info = reservationRepository.findReservationInfoById(reservationId)
+                    .orElseThrow(ReservationNotExistsException::new);
 
-        // 예약 및 티켓 생성
-        Reservation reservation = Reservation.create(user, totalPrice);
-        Reservation savedReservation = reservationRepository.save(reservation);
+            List<String> seatNames = ticketRepository.findSeatNameByReservationId(reservationId);
 
-        ticketService.createAndAddTicketsToReservation(savedReservation, showingInfo, seats);
-
-        log.info("Reservation has been created : {}", reservation);
-
-        ReservationInfoTuple info = reservationRepository.findReservationInfoById(savedReservation.getId())
-                .orElseThrow(ReservationNotExistsException::new);
-
-        List<String> seatNames = ticketRepository.findSeatNameByReservationId(savedReservation.getId());
-
-        return new ReservationDetailResponse(
-                info.reservationId(),
-                info.status().getDescription(),
-                info.reservationDate(),
-                info.finalPrice(),
-                info.movieTitle(),
-                info.posterUrl(),
-                info.screenName(),
-                info.showingDate(),
-                info.startTime(),
-                info.endTime(),
-                seatNames
-        );
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ReservationResponse> getReservationsByUserId(Long userId, Pageable pageable) {
-        return reservationRepository.findAllReservationsByUserId(userId, pageable);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public ReservationDetailResponse getReservationDetails(Long reservationId) {
-        ReservationInfoTuple info = reservationRepository.findReservationInfoById(reservationId)
-                .orElseThrow(ReservationNotExistsException::new);
-
-        List<String> seatNames = ticketRepository.findSeatNameByReservationId(reservationId);
-
-        return new ReservationDetailResponse(
-                info.reservationId(),
-                info.status().getDescription(),
-                info.reservationDate(),
-                info.finalPrice(),
-                info.movieTitle(),
-                info.posterUrl(),
-                info.screenName(),
-                info.showingDate(),
-                info.startTime(),
-                info.endTime(),
-                seatNames
-        );
-    }
-
-    @Override
-    public void cancelReservation(Long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(ReservationNotExistsException::new);
-        cancelValidate(reservation);
-        reservation.changeStatus(ReservationStatus.CANCELLED);
-
-        log.info("Reservation has been cancelled : {}", reservation.getId());
-    }
-
-    private void cancelValidate(Reservation reservation) {
-        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
-            throw new ReservationCancelException();
+            return new ReservationDetailResponse(
+                    info.reservationId(),
+                    info.status().getDescription(),
+                    info.reservationDate(),
+                    info.finalPrice(),
+                    info.movieTitle(),
+                    info.posterUrl(),
+                    info.screenName(),
+                    info.showingDate(),
+                    info.startTime(),
+                    info.endTime(),
+                    seatNames
+            );
         }
 
-        Ticket ticket = ticketRepository.findFirstByReservation(reservation)
-                .orElseThrow(ReservationTicketNotExistsException::new);
-        ShowingInfo showingInfo = ticket.getShowingInfo();
+        @Override
+        public void cancelReservation(Long reservationId) {
+            Reservation reservation = reservationRepository.findById(reservationId)
+                    .orElseThrow(ReservationNotExistsException::new);
+            cancelValidate(reservation);
+            reservation.changeStatus(ReservationStatus.CANCELLED);
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startTime = LocalDateTime.of(showingInfo.getShowingDate(), showingInfo.getStartTime());
-        // 10분 전까지 취소 가능
-        LocalDateTime cancelAvailableTime = startTime.minusMinutes(10);
+            log.info("Reservation has been cancelled : {}", reservation.getId());
+        }
 
-        if (now.isAfter(cancelAvailableTime)) {
-            throw new ReservationCancelException();
+        private void cancelValidate(Reservation reservation) {
+            if (reservation.getStatus() == ReservationStatus.CANCELLED) {
+                throw new ReservationCancelException();
+            }
+
+            Ticket ticket = ticketRepository.findFirstByReservation(reservation)
+                    .orElseThrow(ReservationTicketNotExistsException::new);
+            ShowingInfo showingInfo = ticket.getShowingInfo();
+
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime startTime = LocalDateTime.of(showingInfo.getShowingDate(), showingInfo.getStartTime());
+            // 10분 전까지 취소 가능
+            LocalDateTime cancelAvailableTime = startTime.minusMinutes(10);
+
+            if (now.isAfter(cancelAvailableTime)) {
+                throw new ReservationCancelException();
+            }
         }
     }
-}

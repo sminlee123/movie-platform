@@ -10,7 +10,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "tickets")
+@Table(name = "tickets",
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"seat_id", "showing_info_id"})
+        }
+)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Ticket {

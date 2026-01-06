@@ -54,12 +54,21 @@ public class CustomTicketRepositoryImpl implements CustomTicketRepository {
                 .fetch();
     }
 
+    /*
+    SELECT
+    FROM BookingSeat join Booking
+    WHERE BookingSeat.booking_id = Booking.id
+        AND BookingSeat.screenInfo_id = ScreenInfo.id // 매개변수
+        AND BookingSeat.seat.in(seats) // 좌석들이 담긴 매개변수
+
+     */
+
     @Override
     public boolean validateTicketForReservation(ShowingInfo showingInfo, List<Seat> seats) {
         Integer valid = queryFactory
                 .selectOne()
-                .from(ticket)
-                .join(ticket.reservation, reservation)
+                .from(ticket) // BookingSeat
+                .join(ticket.reservation, reservation) // reservation > Booking
                 .where(ticket.showingInfo.eq(showingInfo),
                         ticket.seat.in(seats),
                         reservation.status.ne(ReservationStatus.CANCELLED))
