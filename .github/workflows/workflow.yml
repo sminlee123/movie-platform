@@ -38,7 +38,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: ./target
+          context: .
           file: ./Dockerfile # Dockerfile 파일명
           push: true # 빌드 후 이미지를 Docker Hub에 푸시
           tags: ${{ secrets.DOCKER_USERNAME }}/my-app:latest # 사용자이름 / 이미지 이름 : 태그
