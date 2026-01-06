@@ -24,9 +24,8 @@ jobs:
           distribution: 'temurin'
           cache: maven  # 의존성 캐싱
 
-
       - name: Build
-        run: mvn clean package -DskipTests
+        run: ./mvnw clean package -DskipTests
 
       # 도커 배포 작업
       # 로그인
