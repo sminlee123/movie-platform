@@ -9,5 +9,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 public class MoviePlatformApplication {
     public static void main(String[] args) {
         SpringApplication.run(MoviePlatformApplication.class, args);
+
     }
 }
