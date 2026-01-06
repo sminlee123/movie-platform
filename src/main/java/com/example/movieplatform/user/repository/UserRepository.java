@@ -1,4 +1,4 @@
-package com.example.movieplatform.user.respository;
+package com.example.movieplatform.user.repository;
 
 import com.example.movieplatform.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;

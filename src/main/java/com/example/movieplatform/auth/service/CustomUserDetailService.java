@@ -2,7 +2,7 @@ package com.example.movieplatform.auth.service;
 
 import com.example.movieplatform.auth.domain.CustomUserDetails;
 import com.example.movieplatform.user.domain.User;
-import com.example.movieplatform.user.respository.UserRepository;
+import com.example.movieplatform.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;

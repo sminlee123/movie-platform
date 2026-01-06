@@ -5,7 +5,7 @@ import com.example.movieplatform.user.domain.request.UserCreateRequest;
 import com.example.movieplatform.user.domain.request.UserUpdateRequest;
 import com.example.movieplatform.user.exception.UserAlreadyExistsException;
 import com.example.movieplatform.user.exception.UserNotFoundException;
-import com.example.movieplatform.user.respository.UserRepository;
+import com.example.movieplatform.user.repository.UserRepository;
 import com.example.movieplatform.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

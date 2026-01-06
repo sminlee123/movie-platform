@@ -10,5 +10,4 @@ class MoviePlatformApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }
