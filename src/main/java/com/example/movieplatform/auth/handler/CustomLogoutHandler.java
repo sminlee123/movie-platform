@@ -23,6 +23,13 @@ public class CustomLogoutHandler implements LogoutHandler {
         refreshToken.setMaxAge(0);
         response.addCookie(refreshToken);
 
+        // CSRF 쿠키 삭제
+        Cookie csrfToken = new Cookie("XSRF-TOKEN", null);
+        csrfToken.setPath("/");
+        csrfToken.setHttpOnly(false);
+        csrfToken.setMaxAge(0);
+        response.addCookie(csrfToken);
+
         // 컨텍스트에 담긴 정보 초기화
         SecurityContextHolder.clearContext();
     }

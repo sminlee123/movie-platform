@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -44,15 +45,21 @@ public class ReservationServiceImpl implements ReservationService {
     private final TicketService ticketService;
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public ReservationDetailResponse createReservation(ReservationRequest request, User user) {
         log.info("Seat id {}", request.seatIds());
 
         // 상영정보 검증 (존재 유무, 상영일자 체크)
         ShowingInfo showingInfo = showingInfoService.validateShowingInfo(request.showingInfoId());
 
-        // 좌석 존재 유무 체크
-        List<Seat> seats = seatRepository.findByScreenAndIdIn(showingInfo.getScreen(), request.seatIds());
+        List<Long> sortedSeatIds = request.seatIds().stream()
+                .sorted()
+                .toList();
 
+        // 좌석 존재 유무 체크
+        List<Seat> seats = seatRepository.findByScreenAndIdIn(showingInfo.getScreen(), sortedSeatIds);
+
+        // 좌석 수 체크
         if (seats.size() != request.seatIds().size()) {
             throw new SeatNotFoundException();
         }
