@@ -66,7 +66,7 @@ public class User {
     }
 
     public String getRole() {
-        return isAdmin ? "Admin" : "Member";
+        return isAdmin ? "ADMIN" : "MEMBER";
     }
 
     public void changeUserName(String userName) {

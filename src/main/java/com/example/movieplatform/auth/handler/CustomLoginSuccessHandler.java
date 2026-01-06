@@ -1,6 +1,7 @@
 package com.example.movieplatform.auth.handler;
 
 import com.example.movieplatform.auth.domain.CustomUserDetails;
+import com.example.movieplatform.auth.utils.CsrfUtil;
 import com.example.movieplatform.auth.utils.JwtUtil;
 import com.example.movieplatform.user.domain.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +29,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
+    private final CsrfUtil csrfUtil;
 
     public static final int REFRESH_AGE = 7 * 24 * 60 * 60;
 
@@ -39,21 +41,29 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        User user = userDetails.getUser();
-        String userRole = user.getIsAdmin() ? "ADMIN" : "MEMBER";
+        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        String roleForToken = role.replace("ROLE_", "");
 
         // 엑세스
-        String accessToken = jwtUtil.generateAccessToken(user.getEmail(), userRole);
+        String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername(), roleForToken);
 
         // 리프레시
         Cookie refreshToken = new Cookie("REFRESHTOKEN",
-                jwtUtil.generateRefreshToken(user.getEmail()));
+                jwtUtil.generateRefreshToken(userDetails.getUsername()));
         refreshToken.setHttpOnly(true);
         refreshToken.setPath("/");
         refreshToken.setMaxAge(REFRESH_AGE);
         refreshToken.setSecure(true);
-
         response.addCookie(refreshToken);
+
+        Cookie csrfToken = new Cookie("XSRF-TOKEN",
+                csrfUtil.generateCsrfToken());
+        csrfToken.setHttpOnly(false);
+        csrfToken.setPath("/");
+        csrfToken.setMaxAge(REFRESH_AGE);
+        csrfToken.setSecure(true);
+        response.addCookie(csrfToken);
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
