@@ -96,7 +96,6 @@ public class RefreshTokenController {
 
     private void clearRefreshTokenCookie(HttpServletResponse response) {
         log.warn("Clearing RefreshToken");
-
         Cookie cookie = new Cookie("REFRESHTOKEN", null);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
