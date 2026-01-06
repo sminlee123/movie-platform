@@ -41,15 +41,15 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        User user = userDetails.getUser();
-        String userRole = user.getIsAdmin() ? "ADMIN" : "MEMBER";
+        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        String roleForToken = role.replace("ROLE_", "");
 
         // 엑세스
-        String accessToken = jwtUtil.generateAccessToken(user.getEmail(), userRole);
+        String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername(), roleForToken);
 
         // 리프레시
         Cookie refreshToken = new Cookie("REFRESHTOKEN",
-                jwtUtil.generateRefreshToken(user.getEmail()));
+                jwtUtil.generateRefreshToken(userDetails.getUsername()));
         refreshToken.setHttpOnly(true);
         refreshToken.setPath("/");
         refreshToken.setMaxAge(REFRESH_AGE);

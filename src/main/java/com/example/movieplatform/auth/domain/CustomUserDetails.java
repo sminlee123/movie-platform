@@ -10,33 +10,31 @@ import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
 
-    private final User user;
+    private final String email;
+    private final String password;
+    private final Collection<GrantedAuthority> authorities;
 
     public CustomUserDetails(User user){
-        this.user = user;
-    }
-
-    public String getRole (User user) {
-        if (user.getIsAdmin()) {
-            return "ADMIN";
-        }
-        return "MEMBER";
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.authorities = List.of(new SimpleGrantedAuthority(
+                "ROLE_" + user.getRole()
+        ));
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = getRole(user);
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+        return this.authorities;
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return this.email;
     }
 
     @Override
@@ -57,9 +55,5 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public User getUser() {
-        return this.user;
     }
 }
